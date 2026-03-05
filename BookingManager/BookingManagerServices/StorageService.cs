@@ -9,7 +9,6 @@ public class StorageService
 
     public void LoadData()
     {
-        if (_hostDbModelsList != null && _apartmentDbModelsList != null) return;
         _hostDbModelsList = FakeStorage.HostDbModelsList.ToList();
         _apartmentDbModelsList = FakeStorage.ApartmentDbModelsList.ToList();
     }
@@ -26,5 +25,11 @@ public class StorageService
             }
         }
         return hostApartmentDbModels;
+    }
+
+    public List<HostDBModel> GetAllHosts()
+    {
+        LoadData();
+        return  _hostDbModelsList;
     }
 }
