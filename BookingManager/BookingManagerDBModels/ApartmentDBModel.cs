@@ -15,7 +15,7 @@ public class ApartmentDBModel
     public double Rating { get; set; }
 
     public ApartmentDBModel(int hostId, string name, ApartmentType type, double squareMeters, decimal pricePerNight,
-        int minimumStay, double rating)
+        int minimumStay, decimal rating)
     {
         Id = _instanceCount++;
         HostId = hostId;
@@ -24,6 +24,6 @@ public class ApartmentDBModel
         SquareMeters = squareMeters;
         PricePerNight = pricePerNight;
         MinimumStay = minimumStay;
-        Rating = rating;
+        Rating = Rating;
     }
 }
