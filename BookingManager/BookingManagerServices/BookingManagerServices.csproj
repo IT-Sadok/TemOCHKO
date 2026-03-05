@@ -4,11 +4,11 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>BookingManager.DBModels</RootNamespace>
+        <RootNamespace>BookingManager.Services</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BookingManagerCommon\BookingManagerCommon.csproj" />
+      <ProjectReference Include="..\BookingManagerDBModels\BookingManagerDBModels.csproj" />
     </ItemGroup>
 
 </Project>
