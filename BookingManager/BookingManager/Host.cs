@@ -8,13 +8,14 @@ namespace BookingManager;
 public class Host
 {
     private HostDBModel _hostDbModel;
-    private List<ApartmentDBModel> _apartmentDbModels;
+    private List<Apartment> _apartments;
     private int? _id;
     private string _firstName;
     private string _lastName;
     private HostType _type;
     private string _email;
     private DateTime _dateOfBirth;
+    private double _averageRating;
     private string _phoneNumber;
 
     public int Id
@@ -58,19 +59,19 @@ public class Host
         set => _dateOfBirth = value;
     }
 
-    public List<ApartmentDBModel> ApartmentDbModels
+    public List<Apartment> Apartments
     {
-        get => _apartmentDbModels;
+        get => _apartments;
     }
 
     public double AverageRating
     {
-        get => CalculateAverageRating();
+        get => _averageRating;
     }
 
     public Host()
     {
-        _apartmentDbModels = new List<ApartmentDBModel>();
+        _apartments = new List<Apartment>();
     }
 
     public Host(HostDBModel hostDbModel) : this()
@@ -87,24 +88,27 @@ public class Host
 
     private double CalculateAverageRating()
     {
-        if (_apartmentDbModels.Count == 0)
+        if (_apartments.Count == 0)
             return 0;
         
         double sum = 0;
-        foreach (ApartmentDBModel apartment in _apartmentDbModels)
+        foreach (Apartment apartment in _apartments)
         {
             sum += apartment.Rating;
         }
-        return sum / _apartmentDbModels.Count;
+        return sum / _apartments.Count;
     }
 
     public void LoadApartments(StorageService storageService)
     {
-        if (_id == null || ApartmentDbModels.Count > 0) return;
+        if (_id == null || Apartments.Count > 0) return;
         foreach (ApartmentDBModel apartment in storageService.GetApartmentsOfHost(_hostDbModel.Id))
         {
-            _apartmentDbModels.Add(apartment);
+            var apartmentUi = new Apartment(apartment);
+            _apartments.Add(apartmentUi);
         }
+
+        _averageRating = CalculateAverageRating();
     }
 
     public override string ToString()
@@ -113,7 +117,7 @@ public class Host
         sb.Append("Host: ").Append(_firstName).Append(" ").Append(_lastName)
             .Append(", ID: ").Append(_id).Append(", ").Append(_type)
             .Append(", Email: ").Append(_email).Append(", Phone: ").Append(_phoneNumber)
-            .Append(", Birth Date: ").Append(_dateOfBirth).Append("Average Rating: ")
+            .Append(", Birth Date: ").Append(_dateOfBirth).Append(", Average Rating: ")
             .Append(AverageRating);
         return sb.ToString();
     }

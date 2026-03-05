@@ -57,7 +57,7 @@ public static class FakeStorage
             35.5, 
             1200.00m, 
             2, 
-            4.8m
+            4.8
         );
 
         var vasyliiApt2 = new ApartmentDBModel(
@@ -67,7 +67,7 @@ public static class FakeStorage
             18.0, 
             600.00m, 
             1, 
-            4.5m
+            4.5
         );
 
         var vasyliiApt3 = new ApartmentDBModel(
@@ -77,8 +77,12 @@ public static class FakeStorage
             25.0, 
             250.00m, 
             1, 
-            4.2m
+            4.2
         );
+        
+        _apartmentDbModelsList.Add(vasyliiApt1);
+        _apartmentDbModelsList.Add(vasyliiApt2);
+        _apartmentDbModelsList.Add(vasyliiApt3);
         
         // Agency
         var agencyApt1 = new ApartmentDBModel(
@@ -88,7 +92,7 @@ public static class FakeStorage
             120.0, 
             4500.00m, 
             3, 
-            5.0m
+            5.0
         );
 
         var agencyApt2 = new ApartmentDBModel(
@@ -98,7 +102,7 @@ public static class FakeStorage
             65.0, 
             2200.00m, 
             2, 
-            4.9m
+            4.9
         );
 
         var agencyApt3 = new ApartmentDBModel(
@@ -108,7 +112,7 @@ public static class FakeStorage
             80.5, 
             3500.00m, 
             2, 
-            4.7m
+            4.7
         );
 
         var agencyApt4 = new ApartmentDBModel(
@@ -118,7 +122,7 @@ public static class FakeStorage
             45.0, 
             1800.00m, 
             2, 
-            4.8m
+            4.8
         );
 
         var agencyApt5 = new ApartmentDBModel(
@@ -128,7 +132,13 @@ public static class FakeStorage
             30.0, 
             950.00m, 
             1, 
-            4.6m
+            4.6
         );
+        
+        _apartmentDbModelsList.Add(agencyApt1);
+        _apartmentDbModelsList.Add(agencyApt2);
+        _apartmentDbModelsList.Add(agencyApt3);
+        _apartmentDbModelsList.Add(agencyApt4);
+        _apartmentDbModelsList.Add(agencyApt5);
     }
 }
