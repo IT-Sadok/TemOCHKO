@@ -1,4 +1,8 @@
-﻿using BookingManager.Services;
+﻿using System.Text;
+using BookingManager.Common.Enums;
+using BookingManager.Services;
+using BookingManager.Common.Tools;
+using BookingManager.DBModels;
 
 namespace BookingManager;
 
@@ -126,11 +130,6 @@ class Program
 
     private static void LoadHosts()
     {
-        if (_hosts != null)
-        {
-            return;
-        }
-
         _hosts = new List<Host>();
         foreach (var host in _storageService.GetAllHosts())
         {
@@ -138,5 +137,59 @@ class Program
             hostUIModel.LoadApartments(_storageService);
             _hosts.Add(hostUIModel);
         }
+    }
+
+    private static HostDBModel CreateHostDb()
+    {
+        Console.WriteLine("Menu For Creating A Host: ");
+        string name = Common.Tools.Common.PromptUserForNameInConsole("Name: ");
+        string surname = Common.Tools.Common.PromptUserForNameInConsole("Surname: ");
+        string phone = Common.Tools.Common.PromptUserForPhoneInConsole();
+        string email = Common.Tools.Common.PromptUserForEmailInConsole();
+        DateTime dateOfBirth = Common.Tools.Common.PromptUserForDateInConsole();
+        
+        Console.WriteLine("Choose a type of host");
+        int counter = 0;
+        foreach (var type in HostType.GetValuesAsUnderlyingType<HostType>())
+        {
+            counter++;
+            Console.WriteLine($"{counter}. {type}");
+        }
+
+        var hostTypeLength = HostType.GetValuesAsUnderlyingType<HostType>().Length;
+        int choice = -1;
+        var userInput = "";
+        do
+        {
+            userInput = Console.ReadLine();
+            if (!Common.Tools.Common.ChoiceNumberIsValid(userInput)) 
+            {
+                Console.WriteLine("Invalid choice. Please try again.");
+            }
+            else
+            {
+                choice  = int.Parse(userInput);
+            }
+        } while (choice < 1 || choice > hostTypeLength);
+        HostType hostType = (HostType)(choice - 1);
+        
+        return new HostDBModel(name, surname, hostType, email, phone, dateOfBirth);
+    }
+
+    private static bool RemoveHost()
+    {
+        Console.Write("Input the id of host you want to remove: ");
+        var id = Console.ReadLine();
+
+        bool valid = Common.Tools.Common.ChoiceNumberIsValid(id);
+        if (!valid)
+        {
+            Console.WriteLine("Invalid id. Please try again.");
+            return false;
+        }
+        
+        int numId = int.Parse(id);
+        _storageService.RemoveHost(numId);
+        return true;
     }
 }

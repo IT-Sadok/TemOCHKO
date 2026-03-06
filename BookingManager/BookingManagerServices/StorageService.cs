@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using BookingManager.DBModels;
 
 namespace BookingManager.Services;
@@ -31,5 +32,45 @@ public class StorageService
     {
         LoadData();
         return  _hostDbModelsList;
+    }
+    
+    // CRUD (For Host Entity)
+    public void AddHost(HostDBModel host)
+    {
+        _hostDbModelsList.Add(host);
+    }
+
+    public bool RemoveHost(HostDBModel host)
+    {
+        return _hostDbModelsList.Remove(host);
+      
+    }
+
+    public bool RemoveHost(int hostId)
+    {
+        foreach (var host in _hostDbModelsList)
+        {
+            if (host.Id == hostId)
+            {
+                _hostDbModelsList.Remove(host);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool UpdateHost(HostDBModel host)
+    {
+        foreach (var everyHost in _hostDbModelsList)
+        {
+            if (host.Id == everyHost.Id)
+            {
+                int indexInList = _hostDbModelsList.IndexOf(everyHost);
+                _hostDbModelsList.Remove(everyHost);
+                _hostDbModelsList.Insert(indexInList, host);
+                return true;
+            }
+        }
+        return false;
     }
 }
