@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices.JavaScript;
+using BookingManager.Common.Enums;
 
 namespace BookingManager.Common.Tools;
 
@@ -111,6 +112,34 @@ public static class Common
         } while (!email.Contains('@') && email.Length < 5);
 
         return email;
+    }
+
+    public static HostType PromptUserForHostTypeInConsole()
+    {
+        Console.WriteLine("Choose a type of host (input a number): ");
+        int counter = 0;
+        foreach (var type in Enum.GetNames(typeof(HostType)))
+        {
+            counter++;
+            Console.WriteLine($"{counter}. {type}");
+        }
+
+        var hostTypeLength = HostType.GetValuesAsUnderlyingType<HostType>().Length;
+        int choice = -1;
+        var userInput = "";
+        do
+        {
+            userInput = Console.ReadLine();
+            if (ChoiceNumberIsValid(userInput)) 
+            {
+                Console.WriteLine("Invalid choice. Please try again.");
+            }
+            else
+            {
+                choice  = int.Parse(userInput);
+            }
+        } while (choice < 1 || choice > hostTypeLength);
+        return (HostType)(choice - 1);
     }
 
 }

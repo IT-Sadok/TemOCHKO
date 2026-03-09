@@ -2,7 +2,7 @@ using System.Text;
 using BookingManager.Common.Enums;
 using BookingManager.DBModels;
 
-namespace BookingManager;
+namespace BookingManager.MainApp;
 
 public class Apartment
 {

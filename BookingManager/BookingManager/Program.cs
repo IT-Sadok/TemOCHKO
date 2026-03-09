@@ -4,7 +4,7 @@ using BookingManager.Services;
 using BookingManager.Common.Tools;
 using BookingManager.DBModels;
 
-namespace BookingManager;
+namespace BookingManager.MainApp;
 
 class Program
 {
@@ -13,6 +13,9 @@ class Program
     {
         Default = 1, 
         HostDetails, 
+        HostRemove, 
+        HostAdd, 
+        HostUpdate,
         End, 
         Exit = 100
     }
@@ -33,14 +36,35 @@ class Program
             {
                 case AppState.HostDetails:
                     HostDetailsState(command);
+                    if (_appState  == AppState.HostUpdate) {
+                        Host updatedHost = UpdateHostUi(command);
+                        int index = FindHostIndexByName(updatedHost.FirstName);
+                        _hosts.RemoveAt(index);
+                        _hosts.Insert(index, updatedHost);
+                        
+                        HostDBModel hostDbModel = new HostDBModel(updatedHost.FirstName, updatedHost.LastName, 
+                            updatedHost.Type, updatedHost.Email, updatedHost.PhoneNumber, updatedHost.DateOfBirth);
+                        hostDbModel.Id = updatedHost.Id;
+                        _storageService.UpdateHost(hostDbModel);
+                    }
                     break;
                 case AppState.Default:
                     DefaultState();
+                    break;
+                case AppState.HostRemove:
+                    RemoveHostResult(RemoveHost());
+                    break;
+                case AppState.HostAdd:
+                    HostDBModel newHost = CreateHostDb();
+                    Console.WriteLine("New Host successfully created! ");
+                    AddHostUi(newHost);
+                    _storageService.AddHost(newHost);
                     break;
                 default:
                     break;
             }
             
+            Console.WriteLine("Type back to see the menu");
             Console.WriteLine("Type Exit to exit the application");
             command = Console.ReadLine();
             UpdateState(command);
@@ -60,6 +84,12 @@ class Program
                 break;
             case "back":
                 _appState = AppState.Default;
+                break;
+            case "remove host":
+                _appState = AppState.HostRemove;
+                break;
+            case "add host":
+                _appState =  AppState.HostAdd;
                 break;
             default:
                 switch (_appState)
@@ -89,6 +119,8 @@ class Program
             Console.WriteLine(host);
         }
         Console.WriteLine("Type the name of the host to see its apartments");
+        Console.WriteLine("Type \"Remove Host\" to open the menu for removing the host");
+        Console.WriteLine("Type \"Add Host\" to open the menu for removing the host");
     }
 
     private static void HostDetailsState(string command)
@@ -123,8 +155,18 @@ class Program
         }
         else
         {
-            Console.WriteLine("Type Back to see the list of hosts");
-            _appState = AppState.Default;
+            Console.WriteLine("Type \"Update Host\" if you want to update the host");
+            string choice = Console.ReadLine().Trim().ToLower();
+            switch (choice)
+            {
+                case "update host":
+                    _appState = AppState.HostUpdate;
+                    break;
+                default:
+                    Console.WriteLine("Type Back to see the list of hosts");
+                    _appState = AppState.Default;
+                    break;
+            }
         }
     }
 
@@ -148,9 +190,9 @@ class Program
         string email = Common.Tools.Common.PromptUserForEmailInConsole();
         DateTime dateOfBirth = Common.Tools.Common.PromptUserForDateInConsole();
         
-        Console.WriteLine("Choose a type of host");
+        Console.WriteLine("Choose a type of host (input a number): ");
         int counter = 0;
-        foreach (var type in HostType.GetValuesAsUnderlyingType<HostType>())
+        foreach (var type in Enum.GetNames(typeof(HostType)))
         {
             counter++;
             Console.WriteLine($"{counter}. {type}");
@@ -176,6 +218,11 @@ class Program
         return new HostDBModel(name, surname, hostType, email, phone, dateOfBirth);
     }
 
+    private static void AddHostUi(HostDBModel host)
+    {
+        _hosts.Add(new Host(host));
+    }
+    
     private static bool RemoveHost()
     {
         Console.Write("Input the id of host you want to remove: ");
@@ -189,7 +236,71 @@ class Program
         }
         
         int numId = int.Parse(id);
-        _storageService.RemoveHost(numId);
-        return true;
+        return _storageService.RemoveHost(numId); 
+    }
+
+    private static void RemoveHostResult(bool removed)
+    {
+        string result = (removed) ? "Successfully Removed Host" : "Failed to Remove";
+        Console.WriteLine(result);
+    }
+
+    private static Host UpdateHostUi(string command)
+    {
+        Host hostToUpdate = null;
+        foreach (var host in _hosts)
+        {
+            if (host.FirstName.ToLower() == command || host.LastName.ToLower() == command ||
+                (host.FirstName.ToLower() + " " + host.LastName.ToLower()) == command)
+            {
+                hostToUpdate = host;
+                break;
+            }
+        }
+
+        Console.Write("Input the name of property of the host you want to change: ");
+        var property = Console.ReadLine();
+        switch (property)
+        {
+            case "Name":
+                hostToUpdate.FirstName = Common.Tools.Common.PromptUserForNameInConsole("Enter new name: ");
+                break;
+            case "Surname":
+                hostToUpdate.LastName = Common.Tools.Common.PromptUserForNameInConsole("Enter new surname: ");
+                break;
+            case "Email":
+                hostToUpdate.Email = Common.Tools.Common.PromptUserForEmailInConsole();
+                break;
+            case "Phone":
+                hostToUpdate.PhoneNumber = Common.Tools.Common.PromptUserForPhoneInConsole();
+                break;
+            case "Date Of Birth":
+                hostToUpdate.DateOfBirth = Common.Tools.Common.PromptUserForDateInConsole();
+                break;
+            case "Position":
+                hostToUpdate.Type = Common.Tools.Common.PromptUserForHostTypeInConsole();
+                break;
+            default:
+                break;
+        }
+
+        _appState = AppState.HostDetails;
+        return hostToUpdate;
+    }
+
+    private static int FindHostIndexByName(string hostName)
+    {
+        hostName = hostName.ToLower();
+        hostName = hostName.Trim();
+        foreach (var host in _hosts)
+        {
+            if (host.FirstName.ToLower() == hostName || host.LastName.ToLower() == hostName ||
+                (host.FirstName.ToLower() + " " + host.LastName.ToLower()) == hostName)
+            {
+                return _hosts.IndexOf(host);
+            }
+        }
+
+        return -1;
     }
 }

@@ -3,7 +3,7 @@ using BookingManager.Common.Enums;
 using BookingManager.DBModels;
 using BookingManager.Services;
 
-namespace BookingManager;
+namespace BookingManager.MainApp;
 
 public class Host
 {

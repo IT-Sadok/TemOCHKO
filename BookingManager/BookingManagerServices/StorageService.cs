@@ -16,7 +16,7 @@ public class StorageService
     
     public List<ApartmentDBModel> GetApartmentsOfHost(int hostId)
     {
-        LoadData();
+        // LoadData();
         List<ApartmentDBModel> hostApartmentDbModels = new List<ApartmentDBModel>();
         foreach (var apartment in _apartmentDbModelsList)
         {
@@ -30,7 +30,6 @@ public class StorageService
 
     public List<HostDBModel> GetAllHosts()
     {
-        LoadData();
         return  _hostDbModelsList;
     }
     
@@ -59,18 +58,23 @@ public class StorageService
         return false;
     }
 
-    public bool UpdateHost(HostDBModel host)
+    public bool UpdateHost(HostDBModel hostDbModel)
     {
-        foreach (var everyHost in _hostDbModelsList)
+        foreach (var host in _hostDbModelsList)
         {
-            if (host.Id == everyHost.Id)
+            if (hostDbModel.Id == host.Id)
             {
-                int indexInList = _hostDbModelsList.IndexOf(everyHost);
-                _hostDbModelsList.Remove(everyHost);
-                _hostDbModelsList.Insert(indexInList, host);
+                int indexInList = _hostDbModelsList.IndexOf(host);
+                _hostDbModelsList.Remove(host);
+                _hostDbModelsList.Insert(indexInList, hostDbModel);
                 return true;
             }
         }
         return false;
+    }
+
+    private void SaveDataToStorage()
+    {
+        
     }
 }
