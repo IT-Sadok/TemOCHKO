@@ -1,0 +1,133 @@
+{
+  "Hosts": [
+    {
+      "Id": 1,
+      "FirstName": "Valentina",
+      "LastName": "Lohyshka",
+      "Type": 0,
+      "Email": "valentinapetrovna@gmail.com",
+      "Phone": "\u002B380671234567",
+      "DateOfBirth": "1960-07-24T00:00:00"
+    },
+    {
+      "Id": 2,
+      "FirstName": "Vasylii",
+      "LastName": "Temshik",
+      "Type": 1,
+      "Email": "yatemschik@gmail.com",
+      "Phone": "7298742374",
+      "DateOfBirth": "2000-01-01T00:00:00"
+    },
+    {
+      "Id": 3,
+      "FirstName": "Vazhnyi",
+      "LastName": "Bymazhniy",
+      "Type": 2,
+      "Email": "companyagent@gmail.com",
+      "Phone": "\u002B38099001122",
+      "DateOfBirth": "1991-08-24T00:00:00"
+    }
+  ],
+  "Apartments": [
+    {
+      "Id": 0,
+      "HostId": 1,
+      "Name": "Comnata V Babyli",
+      "Type": 1,
+      "SquareMeters": 10,
+      "PricePerNight": 30.00,
+      "MinimumStay": 30,
+      "Rating": 5
+    },
+    {
+      "Id": 1,
+      "HostId": 1,
+      "Name": "Comnata Babyli",
+      "Type": 2,
+      "SquareMeters": 20,
+      "PricePerNight": 20,
+      "MinimumStay": 365,
+      "Rating": 1
+    },
+    {
+      "Id": 2,
+      "HostId": 2,
+      "Name": "Cozy Kyiv Center Studio",
+      "Type": 0,
+      "SquareMeters": 35.5,
+      "PricePerNight": 1200.00,
+      "MinimumStay": 2,
+      "Rating": 4.8
+    },
+    {
+      "Id": 3,
+      "HostId": 2,
+      "Name": "Quiet Obolon Private Room",
+      "Type": 1,
+      "SquareMeters": 18,
+      "PricePerNight": 600.00,
+      "MinimumStay": 1,
+      "Rating": 4.5
+    },
+    {
+      "Id": 4,
+      "HostId": 2,
+      "Name": "Student Friendly Shared Dorm",
+      "Type": 2,
+      "SquareMeters": 25,
+      "PricePerNight": 250.00,
+      "MinimumStay": 1,
+      "Rating": 4.2
+    },
+    {
+      "Id": 5,
+      "HostId": 3,
+      "Name": "Luxury Pechersk Penthouse",
+      "Type": 0,
+      "SquareMeters": 120,
+      "PricePerNight": 4500.00,
+      "MinimumStay": 3,
+      "Rating": 5
+    },
+    {
+      "Id": 6,
+      "HostId": 3,
+      "Name": "Modern Lviv Balcony Flat",
+      "Type": 0,
+      "SquareMeters": 65,
+      "PricePerNight": 2200.00,
+      "MinimumStay": 2,
+      "Rating": 4.9
+    },
+    {
+      "Id": 7,
+      "HostId": 3,
+      "Name": "Khreschatyk Business Suite",
+      "Type": 0,
+      "SquareMeters": 80.5,
+      "PricePerNight": 3500.00,
+      "MinimumStay": 2,
+      "Rating": 4.7
+    },
+    {
+      "Id": 8,
+      "HostId": 3,
+      "Name": "Odessa Sea Breeze Studio",
+      "Type": 0,
+      "SquareMeters": 45,
+      "PricePerNight": 1800.00,
+      "MinimumStay": 2,
+      "Rating": 4.8
+    },
+    {
+      "Id": 9,
+      "HostId": 3,
+      "Name": "Premium Podil Private Suite",
+      "Type": 1,
+      "SquareMeters": 30,
+      "PricePerNight": 950.00,
+      "MinimumStay": 1,
+      "Rating": 4.6
+    }
+  ]
+}

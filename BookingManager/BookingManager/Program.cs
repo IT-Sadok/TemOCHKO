@@ -8,7 +8,6 @@ namespace BookingManager.MainApp;
 
 class Program
 {
-
     enum AppState
     {
         Default = 1, 
@@ -16,6 +15,7 @@ class Program
         HostRemove, 
         HostAdd, 
         HostUpdate,
+        SaveChanges,
         End, 
         Exit = 100
     }
@@ -44,7 +44,7 @@ class Program
                         
                         HostDBModel hostDbModel = new HostDBModel(updatedHost.FirstName, updatedHost.LastName, 
                             updatedHost.Type, updatedHost.Email, updatedHost.PhoneNumber, updatedHost.DateOfBirth);
-                        hostDbModel.Id = updatedHost.Id;
+                        hostDbModel.ChangeId(updatedHost.Id);;
                         _storageService.UpdateHost(hostDbModel);
                     }
                     break;
@@ -60,6 +60,10 @@ class Program
                     AddHostUi(newHost);
                     _storageService.AddHost(newHost);
                     break;
+                case AppState.SaveChanges:
+                    _storageService.SaveDataToFile();
+                    Console.WriteLine("Changes saved");
+                    break;
                 default:
                     break;
             }
@@ -70,7 +74,8 @@ class Program
             UpdateState(command);
         }
         
-        Console.WriteLine("Thank s for using the booking manager. Bye!");
+        Console.WriteLine("Thanks for using the booking manager. Bye!");
+        //_storageService.SaveDataToFile();
     }
 
     private static void UpdateState(string command)
@@ -90,6 +95,9 @@ class Program
                 break;
             case "add host":
                 _appState =  AppState.HostAdd;
+                break;
+            case "save changes":
+                _appState = AppState.SaveChanges;
                 break;
             default:
                 switch (_appState)
@@ -118,9 +126,10 @@ class Program
             host.LoadApartments(_storageService);
             Console.WriteLine(host);
         }
-        Console.WriteLine("Type the name of the host to see its apartments");
+        Console.WriteLine("Type the name and surname of the host to open his menu");
         Console.WriteLine("Type \"Remove Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Add Host\" to open the menu for removing the host");
+        Console.WriteLine("Type \"Save Changes\" to save changes into the file");
     }
 
     private static void HostDetailsState(string command)
@@ -128,25 +137,25 @@ class Program
         command = command.Trim();
         command = command.ToLower();
         bool cinemaHallExists = false;
-        foreach (var host in _hosts)
+
+        Host host = FindHostByName(command);
+        if (host != null)
         {
-            if (host.FirstName.ToLower() == command || host.LastName.ToLower() == command ||
-                (host.FirstName.ToLower() + " " + host.LastName.ToLower()) == command)
+            cinemaHallExists = true;
+            if (host.Apartments.Count <= 0)
             {
-                cinemaHallExists = true;
-                if (host.Apartments.Count <= 0)
+                Console.WriteLine("No apartments found for this host.");
+            }
+            else
+            {
+                Console.WriteLine("Here is a List of Apartments belonging to " + host.FirstName + " " +
+                                  host.LastName);
+                foreach (var apartment in host.Apartments)
                 {
-                    Console.WriteLine("No apartments found for this host.");
-                }
-                else {
-                    Console.WriteLine("Here is a List of Apartments belonging to " + host.FirstName + " " +
-                                      host.LastName);
-                    foreach (var apartment in host.Apartments)
-                    {
-                        Console.WriteLine(apartment);
-                    }
+                    Console.WriteLine(apartment);
                 }
             }
+
         }
 
         if (!cinemaHallExists)
@@ -248,16 +257,14 @@ class Program
     private static Host UpdateHostUi(string command)
     {
         Host hostToUpdate = null;
-        foreach (var host in _hosts)
-        {
-            if (host.FirstName.ToLower() == command || host.LastName.ToLower() == command ||
-                (host.FirstName.ToLower() + " " + host.LastName.ToLower()) == command)
-            {
-                hostToUpdate = host;
-                break;
-            }
-        }
+        hostToUpdate = FindHostByName(command);
 
+        if (hostToUpdate == null)
+        {
+            Console.WriteLine("Host not found.");
+            return hostToUpdate;
+        }
+        
         Console.Write("Input the name of property of the host you want to change: ");
         var property = Console.ReadLine();
         switch (property)
@@ -274,13 +281,14 @@ class Program
             case "Phone":
                 hostToUpdate.PhoneNumber = Common.Tools.Common.PromptUserForPhoneInConsole();
                 break;
-            case "Date Of Birth":
+            case "Birth Date":
                 hostToUpdate.DateOfBirth = Common.Tools.Common.PromptUserForDateInConsole();
                 break;
             case "Position":
                 hostToUpdate.Type = Common.Tools.Common.PromptUserForHostTypeInConsole();
                 break;
             default:
+                Console.WriteLine("Invalid choice.");
                 break;
         }
 
@@ -302,5 +310,19 @@ class Program
         }
 
         return -1;
+    }
+
+    private static Host FindHostByName(string hostName)
+    {
+        hostName = hostName.ToLower();
+        hostName = hostName.Trim();
+        foreach (var host in _hosts)
+        {
+            if ((host.FirstName.ToLower() + " " + host.LastName.ToLower()) == hostName)
+            {
+                return host;
+            }
+        }
+        return null;
     }
 }

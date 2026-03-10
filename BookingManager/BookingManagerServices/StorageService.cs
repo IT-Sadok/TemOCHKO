@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text.Json;
 using BookingManager.DBModels;
 
 namespace BookingManager.Services;
@@ -7,12 +8,11 @@ public class StorageService
 {
     private List<HostDBModel> _hostDbModelsList;
     private List<ApartmentDBModel> _apartmentDbModelsList;
+    
+    private static string _fileDBName = "Storage.json";
+    private static string _filePath = "C:\\Users\\rozbo\\RiderProjects\\TemOCHKO\\BookingManager\\BookingManagerServices\\" + _fileDBName;
 
-    public void LoadData()
-    {
-        _hostDbModelsList = FakeStorage.HostDbModelsList.ToList();
-        _apartmentDbModelsList = FakeStorage.ApartmentDbModelsList.ToList();
-    }
+    
     
     public List<ApartmentDBModel> GetApartmentsOfHost(int hostId)
     {
@@ -72,9 +72,40 @@ public class StorageService
         }
         return false;
     }
+    
+    private class FileWrapper
+    { 
+        public List<HostDBModel> Hosts { get; set; } = new();
+        public List<ApartmentDBModel> Apartments { get; set; } = new();
+    }
 
-    private void SaveDataToStorage()
+    public void SaveDataToFile()
     {
+        var data = new FileWrapper()
+        {
+            Hosts = _hostDbModelsList,
+            Apartments = _apartmentDbModelsList
+        };
         
+        string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(_filePath, jsonString);
+    }
+    
+    public void LoadData()
+    {
+        // Old way 
+        /*_hostDbModelsList = FakeStorage.HostDbModelsList.ToList();
+        _apartmentDbModelsList = FakeStorage.ApartmentDbModelsList.ToList();*/
+
+        if (!File.Exists(_filePath)) return;
+        
+        string jsonString = File.ReadAllText(_filePath);
+        var loadedData =  JsonSerializer.Deserialize<FileWrapper>(jsonString, new JsonSerializerOptions { WriteIndented = true });
+        
+        if (loadedData != null)
+        {
+            _hostDbModelsList = loadedData.Hosts;
+            _apartmentDbModelsList = loadedData.Apartments;
+        }
     }
 }

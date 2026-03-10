@@ -71,7 +71,12 @@ public static class Common
             {
                 Console.WriteLine("Invalid date. Please try again.");
             }
+            else
+            {
+                date = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day)); 
+            }
         } while (!goodDate);
+        Console.WriteLine("Successfully validated date.");
 
         return date;
     }
@@ -85,6 +90,7 @@ public static class Common
             phoneNumber = Console.ReadLine();
         } while (!PhoneValid(phoneNumber));
 
+        Console.WriteLine("Successfully validated phone number.");
         return phoneNumber;
     }
 
@@ -99,6 +105,7 @@ public static class Common
             name = name.Trim();
         } while (string.IsNullOrEmpty(name));
 
+        Console.WriteLine("Successfully validated");
         return name;
     }
 
@@ -111,12 +118,12 @@ public static class Common
             email = Console.ReadLine().Trim();
         } while (!email.Contains('@') && email.Length < 5);
 
+        Console.WriteLine("Successfully validated email");
         return email;
     }
 
     public static HostType PromptUserForHostTypeInConsole()
     {
-        Console.WriteLine("Choose a type of host (input a number): ");
         int counter = 0;
         foreach (var type in Enum.GetNames(typeof(HostType)))
         {
@@ -129,16 +136,15 @@ public static class Common
         var userInput = "";
         do
         {
+            Console.WriteLine("Choose a type of host (input a number): ");
             userInput = Console.ReadLine();
             if (ChoiceNumberIsValid(userInput)) 
-            {
-                Console.WriteLine("Invalid choice. Please try again.");
-            }
-            else
             {
                 choice  = int.Parse(userInput);
             }
         } while (choice < 1 || choice > hostTypeLength);
+        
+        Console.WriteLine("Successfully validated host position.");
         return (HostType)(choice - 1);
     }
 

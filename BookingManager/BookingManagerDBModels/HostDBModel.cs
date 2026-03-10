@@ -4,7 +4,7 @@ namespace BookingManager.DBModels;
 public class HostDBModel
 {
     private static int _instanceCounter = 0;
-    public int Id { get; set;  }
+    public int Id { get; private set;  }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public HostType Type { get; set; }
@@ -22,5 +22,10 @@ public class HostDBModel
         Email = email;
         Phone = phone;
         DateOfBirth = dateOfBirth;
+    }
+    
+    public void ChangeId(int newId)
+    {
+        Id = newId;
     }
 }
