@@ -27,7 +27,7 @@ class Program
     {
         Console.WriteLine("Welcome To Booking Manager");
         _storageService = new StorageService();
-        _storageService.LoadData();
+        _storageService.LoadDataFromFile();
         string? command = null;
         
         while (_appState != AppState.Exit)
@@ -37,15 +37,7 @@ class Program
                 case AppState.HostDetails:
                     HostDetailsState(command);
                     if (_appState  == AppState.HostUpdate) {
-                        Host updatedHost = UpdateHostUi(command);
-                        int index = FindHostIndexByName(updatedHost.FirstName);
-                        _hosts.RemoveAt(index);
-                        _hosts.Insert(index, updatedHost);
-                        
-                        HostDBModel hostDbModel = new HostDBModel(updatedHost.FirstName, updatedHost.LastName, 
-                            updatedHost.Type, updatedHost.Email, updatedHost.PhoneNumber, updatedHost.DateOfBirth);
-                        hostDbModel.ChangeId(updatedHost.Id);;
-                        _storageService.UpdateHost(hostDbModel);
+                        UpdateHost(command);
                     }
                     break;
                 case AppState.Default:
@@ -68,7 +60,6 @@ class Program
                     break;
             }
             
-            Console.WriteLine("Type back to see the menu");
             Console.WriteLine("Type Exit to exit the application");
             command = Console.ReadLine();
             UpdateState(command);
@@ -84,7 +75,7 @@ class Program
         command = command.ToLower();
         switch (command)
         {
-            case  "exit":
+            case "exit":
                 _appState = AppState.Exit;
                 break;
             case "back":
@@ -136,12 +127,12 @@ class Program
     {
         command = command.Trim();
         command = command.ToLower();
-        bool cinemaHallExists = false;
+        bool hostExists = false;
 
         Host host = FindHostByName(command);
         if (host != null)
         {
-            cinemaHallExists = true;
+            hostExists = true;
             if (host.Apartments.Count <= 0)
             {
                 Console.WriteLine("No apartments found for this host.");
@@ -158,7 +149,7 @@ class Program
 
         }
 
-        if (!cinemaHallExists)
+        if (!hostExists)
         {
             Console.WriteLine("Haven't found the host");
         }
@@ -193,36 +184,28 @@ class Program
     private static HostDBModel CreateHostDb()
     {
         Console.WriteLine("Menu For Creating A Host: ");
-        string name = Common.Tools.Common.PromptUserForNameInConsole("Name: ");
-        string surname = Common.Tools.Common.PromptUserForNameInConsole("Surname: ");
+
+        // Checking if fullname is already occupied of reserved
+        string name = "";
+        string surname = "";
+        string fullName = "";
+        while (true)
+        {
+            name = Common.Tools.Common.PromptUserForNameInConsole("Name: ");
+            surname = Common.Tools.Common.PromptUserForNameInConsole("Surname: ");
+            fullName =  name + " " + surname;
+            if (!IsNameDuplicate(fullName) && !IsNameReserved(fullName)) 
+                break;
+            Console.WriteLine("Fullname already occupied or reserved name. Please try again.");
+        }
+        
+        // Phone, email, date of birth
         string phone = Common.Tools.Common.PromptUserForPhoneInConsole();
         string email = Common.Tools.Common.PromptUserForEmailInConsole();
         DateTime dateOfBirth = Common.Tools.Common.PromptUserForDateInConsole();
         
-        Console.WriteLine("Choose a type of host (input a number): ");
-        int counter = 0;
-        foreach (var type in Enum.GetNames(typeof(HostType)))
-        {
-            counter++;
-            Console.WriteLine($"{counter}. {type}");
-        }
-
-        var hostTypeLength = HostType.GetValuesAsUnderlyingType<HostType>().Length;
-        int choice = -1;
-        var userInput = "";
-        do
-        {
-            userInput = Console.ReadLine();
-            if (!Common.Tools.Common.ChoiceNumberIsValid(userInput)) 
-            {
-                Console.WriteLine("Invalid choice. Please try again.");
-            }
-            else
-            {
-                choice  = int.Parse(userInput);
-            }
-        } while (choice < 1 || choice > hostTypeLength);
-        HostType hostType = (HostType)(choice - 1);
+        // Choosing a host position (from enum HostType)
+        HostType hostType = Common.Tools.Common.PromptUserForHostTypeInConsole();
         
         return new HostDBModel(name, surname, hostType, email, phone, dateOfBirth);
     }
@@ -236,8 +219,8 @@ class Program
     {
         Console.Write("Input the id of host you want to remove: ");
         var id = Console.ReadLine();
-
         bool valid = Common.Tools.Common.ChoiceNumberIsValid(id);
+        
         if (!valid)
         {
             Console.WriteLine("Invalid id. Please try again.");
@@ -252,6 +235,21 @@ class Program
     {
         string result = (removed) ? "Successfully Removed Host" : "Failed to Remove";
         Console.WriteLine(result);
+    }
+
+    private static void UpdateHost(string command)
+    {
+        // Ui part
+        Host updatedHost = UpdateHostUi(command);
+        int index = FindHostIndexByName(updatedHost.FirstName + " " +  updatedHost.LastName);
+        _hosts.RemoveAt(index);
+        _hosts.Insert(index, updatedHost);
+                  
+        // DB part
+        HostDBModel hostDbModel = new HostDBModel(updatedHost.FirstName, updatedHost.LastName, 
+            updatedHost.Type, updatedHost.Email, updatedHost.PhoneNumber, updatedHost.DateOfBirth);
+        hostDbModel.ChangeId(updatedHost.Id);;
+        _storageService.UpdateHost(hostDbModel);
     }
 
     private static Host UpdateHostUi(string command)
@@ -270,10 +268,12 @@ class Program
         switch (property)
         {
             case "Name":
-                hostToUpdate.FirstName = Common.Tools.Common.PromptUserForNameInConsole("Enter new name: ");
+                hostToUpdate.FirstName = PromptHostNameForNoDuplicate("Enter new Name: ", false, hostToUpdate.LastName);
+                Console.WriteLine("Name Successully Changed");
                 break;
             case "Surname":
-                hostToUpdate.LastName = Common.Tools.Common.PromptUserForNameInConsole("Enter new surname: ");
+                hostToUpdate.LastName = PromptHostNameForNoDuplicate("Enter new Surname: ", true, hostToUpdate.FirstName);
+                Console.WriteLine("Surname Successully Changed");
                 break;
             case "Email":
                 hostToUpdate.Email = Common.Tools.Common.PromptUserForEmailInConsole();
@@ -302,13 +302,11 @@ class Program
         hostName = hostName.Trim();
         foreach (var host in _hosts)
         {
-            if (host.FirstName.ToLower() == hostName || host.LastName.ToLower() == hostName ||
-                (host.FirstName.ToLower() + " " + host.LastName.ToLower()) == hostName)
+            if ((host.FirstName.ToLower() + " " + host.LastName.ToLower()) == hostName)
             {
                 return _hosts.IndexOf(host);
             }
         }
-
         return -1;
     }
 
@@ -324,5 +322,55 @@ class Program
             }
         }
         return null;
+    }
+
+    private static bool IsNameDuplicate(string fullName)
+    {
+        fullName = fullName.ToLower();
+        fullName = fullName.Trim();
+        foreach (var host in _hosts)
+        {
+            if ((host.FirstName.ToLower() + " " + host.LastName.ToLower()) == fullName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static bool IsNameReserved(string fullName)
+    {
+        fullName = fullName.ToLower();
+        fullName =  fullName.Trim();
+        switch (fullName)
+        {
+            case "remove host":
+                return true;
+            case "add host":
+                return true;
+            case "save changes":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static string PromptHostNameForNoDuplicate(string prompt, bool isSurname, string otherInitials)
+    {
+        string newName = "";
+        string wholeName = "";
+        while (true)
+        {
+            newName = Common.Tools.Common.PromptUserForNameInConsole(prompt);
+            if (isSurname)
+                wholeName = otherInitials + " " + newName;
+            else 
+                wholeName = newName + " " + otherInitials;
+            if (IsNameDuplicate(wholeName) || IsNameReserved(wholeName))
+                Console.WriteLine("Name already exists. Try again.");
+            else 
+                break;
+        }
+        return newName;
     }
 }

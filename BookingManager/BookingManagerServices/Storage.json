@@ -3,7 +3,7 @@
     {
       "Id": 1,
       "FirstName": "Valentina",
-      "LastName": "Lohyshka",
+      "LastName": "Petrovna",
       "Type": 0,
       "Email": "valentinapetrovna@gmail.com",
       "Phone": "\u002B380671234567",
@@ -12,7 +12,7 @@
     {
       "Id": 2,
       "FirstName": "Vasylii",
-      "LastName": "Temshik",
+      "LastName": "Temchik",
       "Type": 1,
       "Email": "yatemschik@gmail.com",
       "Phone": "7298742374",

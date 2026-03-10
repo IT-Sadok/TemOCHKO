@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using BookingManager.DBModels;
@@ -9,10 +10,8 @@ public class StorageService
     private List<HostDBModel> _hostDbModelsList;
     private List<ApartmentDBModel> _apartmentDbModelsList;
     
-    private static string _fileDBName = "Storage.json";
-    private static string _filePath = "C:\\Users\\rozbo\\RiderProjects\\TemOCHKO\\BookingManager\\BookingManagerServices\\" + _fileDBName;
-
-    
+    private static readonly string FileDbNameS = "Storage.json";
+    private static readonly string FilePathS = Path.Combine(GetServicesDirectory(), FileDbNameS);
     
     public List<ApartmentDBModel> GetApartmentsOfHost(int hostId)
     {
@@ -88,18 +87,18 @@ public class StorageService
         };
         
         string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(_filePath, jsonString);
+        File.WriteAllText(FilePathS, jsonString);
     }
     
-    public void LoadData()
+    public void LoadDataFromFile()
     {
         // Old way 
         /*_hostDbModelsList = FakeStorage.HostDbModelsList.ToList();
         _apartmentDbModelsList = FakeStorage.ApartmentDbModelsList.ToList();*/
 
-        if (!File.Exists(_filePath)) return;
+        if (!File.Exists(FilePathS)) return;
         
-        string jsonString = File.ReadAllText(_filePath);
+        string jsonString = File.ReadAllText(FilePathS);
         var loadedData =  JsonSerializer.Deserialize<FileWrapper>(jsonString, new JsonSerializerOptions { WriteIndented = true });
         
         if (loadedData != null)
@@ -107,5 +106,11 @@ public class StorageService
             _hostDbModelsList = loadedData.Hosts;
             _apartmentDbModelsList = loadedData.Apartments;
         }
+    }
+    
+    // gets path to BookingManagerServices project
+    public static string? GetServicesDirectory([CallerFilePath] string filePath = "")
+    {
+        return Path.GetDirectoryName(filePath);
     }
 }
