@@ -36,9 +36,8 @@ class Program
             {
                 case AppState.HostDetails:
                     HostDetailsState(command);
-                    if (_appState  == AppState.HostUpdate) {
+                    if (_appState  == AppState.HostUpdate) 
                         UpdateHost(command);
-                    }
                     break;
                 case AppState.Default:
                     DefaultState();
@@ -117,7 +116,7 @@ class Program
             host.LoadApartments(_storageService);
             Console.WriteLine(host);
         }
-        Console.WriteLine("Type the name and surname of the host to open his menu");
+        Console.WriteLine("Type the name and surname of the host / ID of the host to open his menu");
         Console.WriteLine("Type \"Remove Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Add Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Save Changes\" to save changes into the file");
@@ -129,7 +128,16 @@ class Program
         command = command.ToLower();
         bool hostExists = false;
 
-        Host host = FindHostByName(command);
+        Host host = null;
+        if (Common.Tools.Common.ChoiceNumberIsValid(command))
+        {
+            host = FindHostById(int.Parse(command));
+        }
+        else
+        {
+            host = FindHostByName(command);
+        }
+        
         if (host != null)
         {
             hostExists = true;
@@ -151,7 +159,7 @@ class Program
 
         if (!hostExists)
         {
-            Console.WriteLine("Haven't found the host");
+            Console.WriteLine("Haven't found the host. Try again");
         }
         else
         {
@@ -255,7 +263,14 @@ class Program
     private static Host UpdateHostUi(string command)
     {
         Host hostToUpdate = null;
-        hostToUpdate = FindHostByName(command);
+        if (Common.Tools.Common.ChoiceNumberIsValid(command))
+        {
+            hostToUpdate = FindHostById(int.Parse(command));
+        }
+        else
+        {
+            hostToUpdate = FindHostByName(command);
+        }
 
         if (hostToUpdate == null)
         {
@@ -321,6 +336,17 @@ class Program
                 return host;
             }
         }
+        return null;
+    }
+
+    private static Host FindHostById(int hostId)
+    {
+        foreach (var host in _hosts)
+        {
+            if (host.Id == hostId)
+                return  host;
+        }
+
         return null;
     }
 
