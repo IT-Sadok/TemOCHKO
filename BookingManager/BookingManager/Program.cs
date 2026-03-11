@@ -26,10 +26,12 @@ class Program
     static void Main(string[] args)
     {
         Console.WriteLine("Welcome To Booking Manager");
+        
         _storageService = new StorageService();
         _storageService.LoadDataFromFile();
         string? command = null;
         
+        // Main App Loop
         while (_appState != AppState.Exit)
         {
             switch (_appState)
@@ -37,7 +39,7 @@ class Program
                 case AppState.HostDetails:
                     HostDetailsState(command);
                     if (_appState  == AppState.HostUpdate) 
-                        UpdateHost(command);
+                        UpdateHostInLists(command);
                     break;
                 case AppState.Default:
                     DefaultState();
@@ -68,6 +70,8 @@ class Program
         //_storageService.SaveDataToFile();
     }
 
+    // Method to change apptate property by the input (command) user gives.
+    // Defines App Behaviour based on user input
     private static void UpdateState(string command)
     {
         command = command.Trim();
@@ -107,6 +111,8 @@ class Program
         }
     }
 
+    // Method used to show default state of application, which shows a list of
+    // all hosts and then prompts user for next command
     private static void DefaultState()
     {
         Console.WriteLine("Here is a list of all Hosts");
@@ -122,12 +128,15 @@ class Program
         Console.WriteLine("Type \"Save Changes\" to save changes into the file");
     }
 
+    // Method, which shows info about particular host, which name or id user gives 
+    // as input (command argument)
     private static void HostDetailsState(string command)
     {
         command = command.Trim();
         command = command.ToLower();
         bool hostExists = false;
-
+        
+        // Find host by id or name
         Host host = null;
         if (Common.Tools.Common.ChoiceNumberIsValid(command))
         {
@@ -141,6 +150,8 @@ class Program
         if (host != null)
         {
             hostExists = true;
+            
+            // if no apartments
             if (host.Apartments.Count <= 0)
             {
                 Console.WriteLine("No apartments found for this host.");
@@ -161,6 +172,8 @@ class Program
         {
             Console.WriteLine("Haven't found the host. Try again");
         }
+        
+        // Prompts whether user wants to update host entity
         else
         {
             Console.WriteLine("Type \"Update Host\" if you want to update the host");
@@ -178,6 +191,8 @@ class Program
         }
     }
 
+    // Method loads all host entities into the list using 
+    // StorageService field
     private static void LoadHosts()
     {
         _hosts = new List<Host>();
@@ -189,6 +204,7 @@ class Program
         }
     }
 
+    // Prompt the user to create host, and returns Host DB entity
     private static HostDBModel CreateHostDb()
     {
         Console.WriteLine("Menu For Creating A Host: ");
@@ -218,11 +234,14 @@ class Program
         return new HostDBModel(name, surname, hostType, email, phone, dateOfBirth);
     }
 
+    // Adds host to UI Host list 
     private static void AddHostUi(HostDBModel host)
     {
         _hosts.Add(new Host(host));
     }
     
+    // Prompts the user needed info to remove the host and
+    // removes it from UI list and from storage service
     private static bool RemoveHost()
     {
         Console.Write("Input the id of host you want to remove: ");
@@ -236,16 +255,19 @@ class Program
         }
         
         int numId = int.Parse(id);
+        Host host = FindHostById(numId);
+        _hosts.Remove(host);
         return _storageService.RemoveHost(numId); 
     }
-
+    
     private static void RemoveHostResult(bool removed)
     {
         string result = (removed) ? "Successfully Removed Host" : "Failed to Remove";
         Console.WriteLine(result);
     }
 
-    private static void UpdateHost(string command)
+    // Updates the host on UI and DB part (storage service)
+    private static void UpdateHostInLists(string command)
     {
         // Ui part
         Host updatedHost = UpdateHostUi(command);
@@ -260,8 +282,11 @@ class Program
         _storageService.UpdateHost(hostDbModel);
     }
 
+    // Prompts the user what property they want to update
     private static Host UpdateHostUi(string command)
     {
+        
+        // Find host by id or fullname
         Host hostToUpdate = null;
         if (Common.Tools.Common.ChoiceNumberIsValid(command))
         {
@@ -381,6 +406,8 @@ class Program
         }
     }
 
+    // Prompts the user for name and surname while fullname already exists or is 
+    // one of coordination commands
     private static string PromptHostNameForNoDuplicate(string prompt, bool isSurname, string otherInitials)
     {
         string newName = "";

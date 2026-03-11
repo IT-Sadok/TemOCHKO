@@ -22,6 +22,17 @@ public static class Common
         return true;
     }
 
+    private static bool EmailValid(string email)
+    {
+        email = email.Trim();
+        if (string.IsNullOrEmpty(email)) return false;
+
+        if (email.Length < 5) return false;
+        if (!email.Contains("@")) return false;
+        
+        return true;
+    }
+
     public static bool ChoiceNumberIsValid(string choice)
     {
         choice = choice.Trim();
@@ -116,7 +127,7 @@ public static class Common
         {
             Console.Write("Email: ");
             email = Console.ReadLine().Trim();
-        } while (!email.Contains('@') && email.Length < 5);
+        } while (!EmailValid(email));
 
         Console.WriteLine("Successfully validated email");
         return email;

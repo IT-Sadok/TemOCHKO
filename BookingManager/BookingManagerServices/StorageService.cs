@@ -38,12 +38,6 @@ public class StorageService
         _hostDbModelsList.Add(host);
     }
 
-    public bool RemoveHost(HostDBModel host)
-    {
-        return _hostDbModelsList.Remove(host);
-      
-    }
-
     public bool RemoveHost(int hostId)
     {
         foreach (var host in _hostDbModelsList)
@@ -72,6 +66,7 @@ public class StorageService
         return false;
     }
     
+    // Wrapper used to wrap two lists into one entity to store in a Json file
     private class FileWrapper
     { 
         public List<HostDBModel> Hosts { get; set; } = new();
