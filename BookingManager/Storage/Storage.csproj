@@ -4,6 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>StorageContext</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GeneratorId\GeneratorId.csproj" />
+      <ProjectReference Include="..\Models\Models.csproj" />
+    </ItemGroup>
 
 </Project>
