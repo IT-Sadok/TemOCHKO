@@ -26,9 +26,9 @@ public class InMemoryStorageContext : IStorageContext
 
         var comnataUPetrovni = new Apartment(_idGenerator.GenerateApartmentId(), privateHost.Id, "Comnata V Babyli", ApartmentType.PrivateRoom, 10,
             30.00m, 30, 5);
-        _apartments.Append(comnataUPetrovni);
+        _apartments.Add(comnataUPetrovni);
         var comnataSPetrovnoi = new Apartment(_idGenerator.GenerateApartmentId(), privateHost.Id, "Comnata Babyli", ApartmentType.SharedRoom, 20, 20, 365, 1);
-        _apartments.Append(comnataSPetrovnoi);
+        _apartments.Add(comnataSPetrovnoi);
         
         // Vasylii
         var vasyliiApt1 = new Apartment(
@@ -64,9 +64,9 @@ public class InMemoryStorageContext : IStorageContext
             4.2
         );
         
-        _apartments.Append(vasyliiApt1);
-        _apartments.Append(vasyliiApt2);
-        _apartments.Append(vasyliiApt3);
+        _apartments.Add(vasyliiApt1);
+        _apartments.Add(vasyliiApt2);
+        _apartments.Add(vasyliiApt3);
         
         // Agency
         var agencyApt1 = new Apartment(
@@ -124,11 +124,11 @@ public class InMemoryStorageContext : IStorageContext
             4.6
         );
         
-        _apartments.Append(agencyApt1);
-        _apartments.Append(agencyApt2);
-        _apartments.Append(agencyApt3);
-        _apartments.Append(agencyApt4);
-        _apartments.Append(agencyApt5);
+        _apartments.Add(agencyApt1);
+        _apartments.Add(agencyApt2);
+        _apartments.Add(agencyApt3);
+        _apartments.Add(agencyApt4);
+        _apartments.Add(agencyApt5);
         
         #endregion
     }
@@ -150,12 +150,15 @@ public class InMemoryStorageContext : IStorageContext
 
     public Host GetHost(string name)
     {
-        return _hosts.FirstOrDefault(host => host.FirstName.ToLower() + host.LastName.ToLower() == name.ToLower());
+        return _hosts.FirstOrDefault(host => host.FirstName.ToLower() + " " + host.LastName.ToLower() == name.ToLower());
     }
 
-    public void RemoveHost(int hostId)
+    public bool RemoveHost(int hostId)
     {
-        _hosts.Where(host => host.Id == hostId).ToList().ForEach(host => _hosts.Remove(host));
+        var hostToRemove = _hosts.FirstOrDefault(host => host.Id == hostId);
+        if (hostToRemove != null)
+            return _hosts.Remove(hostToRemove); 
+        return false; 
     }
 
     public void UpdateHost(Host host)

@@ -23,9 +23,9 @@ public class HostRepository :  IHostRepository
         _storageContext.AddHost(host);
     }
 
-    public void RemoveHost(int hostId)
+    public bool RemoveHost(int hostId)
     {
-        _storageContext.RemoveHost(hostId);
+        return _storageContext.RemoveHost(hostId);
     }
 
     public Host GetHost(int hostId)

@@ -52,10 +52,6 @@ public class Menu
                         _appState =  MenuList.HostDetails;
                         ShowHostDetails(command);
                         break;
-                    case MenuList.HostDetails:
-                        _appState = MenuList.Default;
-                        DefaultState();
-                        break;
                     default:
                         Console.WriteLine("Unknown command. Please try again.");
                         _appState = MenuList.Default;
@@ -71,7 +67,7 @@ public class Menu
         Console.WriteLine("Here is the list of all hosts: ");
         foreach (var host in _hostService.GetHostsList())
         {
-            Console.WriteLine($"Host: {host.FirstName} {host.LastName}, {host.Type}, phone: {host.Phone}");
+            Console.WriteLine($"Host: {host.FirstName} {host.LastName}, Id: {host.Id}, {host.Type}, phone: {host.Phone}");
         }
         Console.WriteLine();
         Console.WriteLine("Type the name and surname of the host / ID of the host to open his menu");
@@ -102,32 +98,47 @@ public class Menu
                 break;
             }
         }
-        
-        await UpdateState(_command);
     }
 
     public async Task ShowMenuAsync()
     {
-        Console.WriteLine();
-
-        /*foreach (MenuList item in Enum.GetValues(typeof(MenuList)))
+        while (_appState != MenuList.End)
         {
-            Console.WriteLine($"{item}");
-        }*/
-      
-        DefaultState();
-        
-        await ReadUserInput();
+            DefaultState();
+            ReadUserInput();
+            UpdateState(_command);
+        }
     }
     
     private void RemoveHostOperations()
     {
-        Console.WriteLine("Remove the host and remove the host operations");        
+        Console.Write("Input the id of host you want to remove: ");
+        var id = Console.ReadLine();
+        bool valid = Common.ChoiceNumberIsValid(id);
+        
+        if (!valid)
+        {
+            Console.WriteLine("Invalid id. Please try again.");
+            return;
+        }
+        
+        int numId = int.Parse(id);
+        if (_hostService.RemoveHost(numId))
+            Console.WriteLine("Host removed");
+        else
+            Console.WriteLine("Host not found");
+        
+        _appState = MenuList.Default;
     }
     
     private void AddHostOperations()
     {
         Console.WriteLine("Add the host and add the host operations");
+    }
+
+    private void UpdateHostOperations(string command)
+    {
+        Console.WriteLine("Update the host and update the host operations");
     }
     
     private void SaveChanges()
@@ -137,6 +148,8 @@ public class Menu
 
     private void ShowHostDetails(string command)
     {
+        Console.WriteLine();
+        
         command = command.Trim();
         command = command.ToLower();
 
@@ -144,7 +157,9 @@ public class Menu
         if (Common.ChoiceNumberIsValid(command))
             hostDetails = _hostService.GetHost(int.Parse(command));
         else
+        {
             hostDetails = _hostService.GetHost(command);
+        }
 
         if (hostDetails == null)
         {
@@ -166,16 +181,17 @@ public class Menu
                 Console.WriteLine($"{apartment.Name}, {apartment.Type}, Price - {apartment.PricePerNight}, Rating -  {apartment.Rating}");
             }
         }
-    
+
         Console.WriteLine("Type \"Update Host\" if you want to update the host");
+        Console.WriteLine("Type Back to see the list of hosts");
         string choice = Console.ReadLine().Trim().ToLower();
         switch (choice)
         {
             case "update host":
                 _appState = MenuList.HostUpdate;
+                UpdateHostOperations(command);
                 break;
             default:
-                Console.WriteLine("Type Back to see the list of hosts");
                 _appState = MenuList.Default;
                 break;
         }

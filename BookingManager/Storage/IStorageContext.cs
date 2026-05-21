@@ -8,7 +8,7 @@ public interface IStorageContext
     void AddHost(Host host);
     Host GetHost(int hostId);
     Host GetHost(string name);
-    void RemoveHost(int hostId);
+    bool RemoveHost(int hostId);
     void UpdateHost(Host host);
     IEnumerable<Apartment> GetApartmentsOfHost(int hostId);
 }
