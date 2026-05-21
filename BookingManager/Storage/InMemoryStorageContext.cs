@@ -148,6 +148,11 @@ public class InMemoryStorageContext : IStorageContext
         return _hosts.FirstOrDefault(host => host.Id == hostId);
     }
 
+    public Host GetHost(string name)
+    {
+        return _hosts.FirstOrDefault(host => host.FirstName.ToLower() + host.LastName.ToLower() == name.ToLower());
+    }
+
     public void RemoveHost(int hostId)
     {
         _hosts.Where(host => host.Id == hostId).ToList().ForEach(host => _hosts.Remove(host));

@@ -1,17 +1,22 @@
+using Models.DTOs;
+using Repositories;
 using Services;
+using Tools;
 
 namespace BookingManager;
 
 public class Menu
 {
     private IHostService _hostService;
+    private IApartmentService _apartmentService;
 
     private MenuList _appState = MenuList.Default;
     private string _command;
     
-    public Menu(IHostService hostService)
+    public Menu(IHostService hostService, IApartmentService apartmentService)
     {
         _hostService = hostService;
+        _apartmentService = apartmentService;
     }
     
     private async Task UpdateState(string command)
@@ -132,6 +137,47 @@ public class Menu
 
     private void ShowHostDetails(string command)
     {
-        Console.WriteLine($"Command: {command}");
+        command = command.Trim();
+        command = command.ToLower();
+
+        HostDetailsDTO hostDetails;
+        if (Common.ChoiceNumberIsValid(command))
+            hostDetails = _hostService.GetHost(int.Parse(command));
+        else
+            hostDetails = _hostService.GetHost(command);
+
+        if (hostDetails == null)
+        {
+            Console.WriteLine("Haven't found the host. Try again");
+            return;
+        }
+    
+        var apartList = _apartmentService.GetApartmentsOfHost(hostDetails.Id);
+        if (apartList.Count <= 0)
+        {
+            Console.WriteLine("There are no apartments for this host. ");
+        }
+        else
+        {
+            Console.WriteLine("Here is a List of Apartments belonging to " + hostDetails.FirstName + " " +
+                              hostDetails.LastName);
+            foreach (var apartment in apartList)
+            {
+                Console.WriteLine($"{apartment.Name}, {apartment.Type}, Price - {apartment.PricePerNight}, Rating -  {apartment.Rating}");
+            }
+        }
+    
+        Console.WriteLine("Type \"Update Host\" if you want to update the host");
+        string choice = Console.ReadLine().Trim().ToLower();
+        switch (choice)
+        {
+            case "update host":
+                _appState = MenuList.HostUpdate;
+                break;
+            default:
+                Console.WriteLine("Type Back to see the list of hosts");
+                _appState = MenuList.Default;
+                break;
+        }
     }
 }

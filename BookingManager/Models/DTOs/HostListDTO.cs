@@ -5,8 +5,8 @@ public class HostListDTO
     public int Id { get; }
     public string FirstName { get; }
     public string LastName { get; }
-    public HostType Type { get; set;}
-    public string Phone { get; set; }
+    public HostType Type { get; }
+    public string Phone { get; }
 
     public HostListDTO(Host host) : this(host.Id, host.FirstName, host.LastName, host.Type, host.Phone)
     {

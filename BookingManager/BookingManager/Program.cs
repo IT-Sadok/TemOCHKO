@@ -11,8 +11,10 @@ class Program
     static void Main(string[] args)
     {
         IHostRepository hostRepository = new HostRepository(storageContext);
+        IApartmentRepository apartmentRepository = new ApartmentRepository(storageContext);
         IHostService hostService = new HostService(hostRepository);
-        Menu menu = new Menu(hostService);
+        IApartmentService apartmentService = new ApartmentService(apartmentRepository);
+        Menu menu = new Menu(hostService, apartmentService);
 
         menu.ShowMenuAsync();
     }

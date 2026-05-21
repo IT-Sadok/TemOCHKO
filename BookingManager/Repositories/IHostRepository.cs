@@ -8,4 +8,5 @@ public interface IHostRepository
     void AddHost(Host host);
     void RemoveHost(int hostId);
     Host GetHost(int hostId);
+    Host GetHost(string name);
 }

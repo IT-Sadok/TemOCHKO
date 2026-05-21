@@ -23,4 +23,16 @@ public class HostService : IHostService
 
         return res;
     }
+
+    public HostDetailsDTO GetHost(int id)
+    {
+        var hostDbModel = _hostRepository.GetHost(id);
+        return new HostDetailsDTO(hostDbModel);
+    }
+
+    public HostDetailsDTO GetHost(string name)
+    {
+        var hostDbModel = _hostRepository.GetHost(name);
+        return new HostDetailsDTO(hostDbModel);
+    }
 }

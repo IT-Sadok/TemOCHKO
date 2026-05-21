@@ -32,4 +32,9 @@ public class HostRepository :  IHostRepository
     {
         return _storageContext.GetHost(hostId);
     }
+
+    public Host GetHost(string name)
+    {
+        return _storageContext.GetHost(name);
+    }
 }
