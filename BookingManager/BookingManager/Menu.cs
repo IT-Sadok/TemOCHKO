@@ -1,3 +1,4 @@
+using Models;
 using Models.DTOs;
 using Repositories;
 using Services;
@@ -195,5 +196,34 @@ public class Menu
                 _appState = MenuList.Default;
                 break;
         }
+    }
+    
+    // Prompt the user to create host, and returns Host DB entity
+    private static HostCreateDTO PromptToCreateHost()
+    {
+        Console.WriteLine("Menu For Creating A Host: ");
+        
+        Console.WriteLine("First Name: ");
+        string firstName = Console.ReadLine();
+        
+        Console.WriteLine("Last Name: ");
+        string lastName = Console.ReadLine();
+
+        /*
+        Console.WriteLine("Host Type: ");
+        HostType hostType =(HostType) Console.ReadLine();*/
+
+        HostType hostType = HostType.Agency;
+        
+        Console.WriteLine("Email: ");
+        string email = Console.ReadLine();
+        
+        Console.WriteLine("Phone: ");
+        string phone = Console.ReadLine();
+        
+        Console.WriteLine("Date of birth: ");
+        DateTime dateOfBirth = new DateTime();
+        
+        return new HostCreateDTO(firstName, lastName, hostType, email, phone, dateOfBirth);
     }
 }
