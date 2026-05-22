@@ -163,9 +163,8 @@ public class InMemoryStorageContext : IStorageContext
 
     public void UpdateHost(Host host)
     {
-        var index = _hosts.IndexOf(host);
-        if (index >= 0 && index < _hosts.Count)
-            _hosts[index] = host;
+        for (int i = 0; i < _hosts.Count; i++)  
+            if (_hosts[i].Id == host.Id) _hosts[i] = host;
     }
 
     public IEnumerable<Apartment> GetApartmentsOfHost(int hostId)

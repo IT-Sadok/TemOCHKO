@@ -37,4 +37,9 @@ public class HostRepository :  IHostRepository
     {
         return _storageContext.GetHost(name);
     }
+
+    public void UpdateHost(Host host)
+    {
+        _storageContext.UpdateHost(host);
+    }
 }

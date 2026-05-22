@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Models;
 using Models.DTOs;
 using Repositories;
@@ -134,12 +135,51 @@ public class Menu
     
     private void AddHostOperations()
     {
-        Console.WriteLine("Add the host and add the host operations");
+        var hostCreateDto = PromptToCreateHost();
+
+        try
+        {
+            _hostService.AddHost(hostCreateDto);
+            Console.WriteLine("Host added");
+        }
+        catch (ValidationException e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine("Failed to add host. Try again");
+        }
+        finally
+        {
+            Console.WriteLine();
+            _appState = MenuList.Default;
+        }
     }
 
     private void UpdateHostOperations(string command)
     {
-        Console.WriteLine("Update the host and update the host operations");
+        var hostUpdateDto = PromptToUpdateHost(command);
+
+        if (hostUpdateDto == null)
+        {
+            Console.WriteLine();
+            _appState = MenuList.Default;
+            return;
+        }
+        
+        try
+        {
+            _hostService.UpdateHost(hostUpdateDto);
+            Console.WriteLine("Host updated");
+        }
+        catch (ValidationException e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine("Failed to update host. Try again");
+        }
+        finally
+        {
+            Console.WriteLine();
+            _appState = MenuList.Default;
+        }
     }
     
     private void SaveChanges()
@@ -165,6 +205,7 @@ public class Menu
         if (hostDetails == null)
         {
             Console.WriteLine("Haven't found the host. Try again");
+            _appState = MenuList.Default;
             return;
         }
     
@@ -175,12 +216,10 @@ public class Menu
         }
         else
         {
-            Console.WriteLine("Here is a List of Apartments belonging to " + hostDetails.FirstName + " " +
-                              hostDetails.LastName);
+            Console.WriteLine("Here is a List of Apartments belonging to " + hostDetails.FirstName + " " + hostDetails.LastName);
             foreach (var apartment in apartList)
-            {
                 Console.WriteLine($"{apartment.Name}, {apartment.Type}, Price - {apartment.PricePerNight}, Rating -  {apartment.Rating}");
-            }
+            Console.WriteLine();
         }
 
         Console.WriteLine("Type \"Update Host\" if you want to update the host");
@@ -198,32 +237,85 @@ public class Menu
         }
     }
     
-    // Prompt the user to create host, and returns Host DB entity
-    private static HostCreateDTO PromptToCreateHost()
+    // Prompt the user to create host, and returns Host Create entity
+    private HostCreateDTO PromptToCreateHost()
     {
         Console.WriteLine("Menu For Creating A Host: ");
-        
         Console.WriteLine("First Name: ");
         string firstName = Console.ReadLine();
-        
         Console.WriteLine("Last Name: ");
         string lastName = Console.ReadLine();
-
-        /*
-        Console.WriteLine("Host Type: ");
-        HostType hostType =(HostType) Console.ReadLine();*/
-
-        HostType hostType = HostType.Agency;
-        
+        HostType hostType = Common.PromptUserForHostTypeInConsole();
         Console.WriteLine("Email: ");
         string email = Console.ReadLine();
-        
         Console.WriteLine("Phone: ");
         string phone = Console.ReadLine();
-        
-        Console.WriteLine("Date of birth: ");
-        DateTime dateOfBirth = new DateTime();
+        DateTime dateOfBirth = Common.PromptUserForDateInConsole("Enter host's date of birth: ");
         
         return new HostCreateDTO(firstName, lastName, hostType, email, phone, dateOfBirth);
+    }
+
+    private HostDetailsDTO PromptToUpdateHost(string command)
+    {
+        Console.WriteLine();
+        
+        command = command.Trim();
+        command = command.ToLower();
+
+        HostDetailsDTO hostToUpdate;
+        if (Common.ChoiceNumberIsValid(command))
+            hostToUpdate = _hostService.GetHost(int.Parse(command));
+        else
+        {
+            hostToUpdate = _hostService.GetHost(command);
+        }
+        
+        if (hostToUpdate == null)
+        {
+            Console.WriteLine("Host not found.");
+            return hostToUpdate;
+        }
+        
+        string firstName =  hostToUpdate.FirstName;
+        string lastName =  hostToUpdate.LastName;
+        string email =  hostToUpdate.Email;
+        string phone = hostToUpdate.Phone;
+        HostType type = hostToUpdate.Type;
+        DateTime dateOfBirth = hostToUpdate.DateOfBirth;
+        
+        Console.Write("Input the name of property of the host you want to change: ");
+        var property = Console.ReadLine();
+        property = property.ToLower();
+        property = property.Trim();
+        switch (property)
+        {
+            case "name":
+                Console.WriteLine("Enter new name: ");
+                firstName = Console.ReadLine();
+                break;
+            case "surname":
+                Console.WriteLine("Enter new surname: ");
+                lastName = Console.ReadLine();
+                break;
+            case "email":
+                Console.Write("Enter new email: ");
+                email = Console.ReadLine();
+                break;
+            case "phone":
+                Console.WriteLine("Enter new phone: ");
+                phone = Console.ReadLine();
+                break;
+            case "birth date":
+                dateOfBirth = Common.PromptUserForDateInConsole("Enter new host's date of birth: ");
+                break;
+            case "position":
+                type = Common.PromptUserForHostTypeInConsole();
+                break;
+            default:
+                Console.WriteLine("Invalid choice.");
+                return null;
+        }
+        
+        return new HostDetailsDTO(hostToUpdate.Id, firstName, lastName, type, email, phone, dateOfBirth);
     }
 }

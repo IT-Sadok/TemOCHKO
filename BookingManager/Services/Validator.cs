@@ -15,6 +15,13 @@ public static class Validator
         return errors;
     }
 
+    public static List<ValidationError> Validate(this HostDetailsDTO hostDetailsDto)
+    {
+        var errors = new List<ValidationError>();
+        errors.AddRange(ValidateHost(hostDetailsDto.FirstName, hostDetailsDto.LastName, hostDetailsDto.Type, hostDetailsDto.Email, hostDetailsDto.Phone, hostDetailsDto.DateOfBirth));
+        return errors;
+    }
+
     public static List<ValidationError> ValidateHost(string firstName, string lastName, HostType hostType, string email,
         string phone, DateTime dateOfBirth)
     {
@@ -47,8 +54,8 @@ public static class Validator
         var errors = new List<ValidationError>();
         if (date == null)
             errors.Add(new ValidationError($"{displayName}  must be selected.", propertyName));
-        if (date <= new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month, DateTime.Today.Day))
-            errors.Add(new ValidationError($"{displayName}  cannot be in past.", propertyName));
+        if (date >= new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month, DateTime.Today.Day))
+            errors.Add(new ValidationError($"Host can't be less than 18 years old. ", propertyName));
         return errors;
     }
 
@@ -59,7 +66,7 @@ public static class Validator
             errors.Add(new ValidationError($"{displayName} can't be empty.", propertyName));
         if (email.Length < 10)
             errors.Add(new ValidationError($"{displayName} must be at least 10 characters long.", propertyName));
-        if (!email.Contains("@gmail.com") || !email.Contains("@ukr.net"))
+        if (!email.Contains("@gmail.com") && !email.Contains("@ukr.net"))
             errors.Add(new ValidationError($"{displayName} must be a valid email address.", propertyName));
         return errors;
     }

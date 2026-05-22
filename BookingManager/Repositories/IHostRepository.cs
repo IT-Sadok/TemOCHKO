@@ -9,4 +9,5 @@ public interface IHostRepository
     bool RemoveHost(int hostId);
     Host GetHost(int hostId);
     Host GetHost(string name);
+    void UpdateHost(Host host);
 }

@@ -10,8 +10,7 @@ public class ApartmentService : IApartmentService
     {
         _apartmentRepository = apartmentRepository;
     }
-
-
+    
     public List<ApartmentListDTO> GetApartmentsOfHost(int hostId)
     {
         var apartList = new List<ApartmentListDTO>();
