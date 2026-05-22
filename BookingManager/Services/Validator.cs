@@ -28,6 +28,8 @@ public static class Validator
         var errors = new List<ValidationError>();
         errors.AddRange(ValidateHostName(firstName, nameof(HostCreateDTO.FirstName), "First Name"));
         errors.AddRange(ValidateHostName(lastName, nameof(HostCreateDTO.LastName), "Last Name"));
+        if (IsNameReserved(firstName + " " + lastName))
+            errors.Add(new ValidationError($"Full Name must not be a reserved word (exit, back etc.)", nameof(HostCreateDTO.FirstName) + " " + nameof(HostCreateDTO.LastName)));
         errors.AddRange(ValidateEmail(email, nameof(HostCreateDTO.Email), "Email"));
         errors.AddRange(ValidatePhone(phone, nameof(HostCreateDTO.Phone), "Phone"));
         errors.AddRange(ValidateDateOfBirth(dateOfBirth, nameof(HostCreateDTO.DateOfBirth), "Date of birth"));
@@ -64,8 +66,8 @@ public static class Validator
         var errors = new List<ValidationError>();
         if (String.IsNullOrWhiteSpace(email))
             errors.Add(new ValidationError($"{displayName} can't be empty.", propertyName));
-        if (email.Length < 10)
-            errors.Add(new ValidationError($"{displayName} must be at least 10 characters long.", propertyName));
+        if (email.Length < 15)
+            errors.Add(new ValidationError($"{displayName} must be at least 15 characters long.", propertyName));
         if (!email.Contains("@gmail.com") && !email.Contains("@ukr.net"))
             errors.Add(new ValidationError($"{displayName} must be a valid email address.", propertyName));
         return errors;
@@ -79,5 +81,22 @@ public static class Validator
         if (phone.Length < 9)
             errors.Add(new ValidationError($"{displayName} must be at least 9 characters long.", propertyName));
         return errors;
+    }
+    
+    private static bool IsNameReserved(string fullName)
+    {
+        fullName = fullName.ToLower();
+        fullName =  fullName.Trim();
+        switch (fullName)
+        {
+            case "remove host":
+                return true;
+            case "add host":
+                return true;
+            case "save changes":
+                return true;
+            default:
+                return false;
+        }
     }
 }

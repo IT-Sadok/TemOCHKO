@@ -33,7 +33,6 @@ public class Menu
                 break;
             case "back":
                 _appState = MenuList.Default;
-                DefaultState();
                 break;
             case "remove host":
                 _appState = MenuList.HostRemove;
@@ -208,7 +207,10 @@ public class Menu
             _appState = MenuList.Default;
             return;
         }
-    
+        
+        Console.WriteLine($"Name: {hostDetails.FirstName}, Surname: {hostDetails.LastName}, {hostDetails.Type},\nEmail: {hostDetails.Email}, Phone: {hostDetails.Phone}, Date of birth: {hostDetails.DateOfBirth}");
+        Console.WriteLine();
+        
         var apartList = _apartmentService.GetApartmentsOfHost(hostDetails.Id);
         if (apartList.Count <= 0)
         {
@@ -283,7 +285,9 @@ public class Menu
         HostType type = hostToUpdate.Type;
         DateTime dateOfBirth = hostToUpdate.DateOfBirth;
         
-        Console.Write("Input the name of property of the host you want to change: ");
+        Console.WriteLine("Input the name of property of the host you want to change: ");
+        Console.Write("| ");
+        foreach (var prop in hostToUpdate.GetType().GetProperties()) Console.Write($"{prop.Name} | ");
         var property = Console.ReadLine();
         property = property.ToLower();
         property = property.Trim();
