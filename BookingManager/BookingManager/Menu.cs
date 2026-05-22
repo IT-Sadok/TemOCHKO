@@ -75,6 +75,7 @@ public class Menu
         Console.WriteLine("Type \"Remove Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Add Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Save Changes\" to save changes into the file");
+        Console.WriteLine("Type \"Exit\" to exit the program");
     }
 
     private void ExitProgram()
@@ -183,7 +184,11 @@ public class Menu
     
     private void SaveChanges()
     {
-        Console.WriteLine("Save changes");
+        _hostService.SaveHosts();
+        _apartmentService.SaveApartments();
+        Console.WriteLine("\nChanges saved\n");
+        
+        _appState = MenuList.Default;
     }
 
     private void ShowHostDetails(string command)
@@ -287,17 +292,21 @@ public class Menu
         
         Console.WriteLine("Input the name of property of the host you want to change: ");
         Console.Write("| ");
-        foreach (var prop in hostToUpdate.GetType().GetProperties()) Console.Write($"{prop.Name} | ");
+        foreach (var prop in typeof(HostDetailsDTO).GetProperties())
+        {
+            if (prop.Name != "Id")
+                Console.Write($"{Common.GetDisplayName(typeof(HostDetailsDTO), prop.Name)} | ");
+        }
         var property = Console.ReadLine();
         property = property.ToLower();
         property = property.Trim();
         switch (property)
         {
-            case "name":
+            case "first name":
                 Console.WriteLine("Enter new name: ");
                 firstName = Console.ReadLine();
                 break;
-            case "surname":
+            case "last name":
                 Console.WriteLine("Enter new surname: ");
                 lastName = Console.ReadLine();
                 break;
@@ -309,10 +318,10 @@ public class Menu
                 Console.WriteLine("Enter new phone: ");
                 phone = Console.ReadLine();
                 break;
-            case "birth date":
+            case "date of birth":
                 dateOfBirth = Common.PromptUserForDateInConsole("Enter new host's date of birth: ");
                 break;
-            case "position":
+            case "type":
                 type = Common.PromptUserForHostTypeInConsole();
                 break;
             default:

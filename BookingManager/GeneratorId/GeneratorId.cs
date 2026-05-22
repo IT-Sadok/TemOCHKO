@@ -3,7 +3,7 @@ namespace IdGenerator;
 public class GeneratorId : IGeneratorId
 {
     private static int _hostInstanceCounter = 0;
-    private static int _apartmentInstanceCounter = -1000;
+    private static int _apartmentInstanceCounter = 2000;
     
     public int GenerateHostId()
     {
@@ -12,6 +12,6 @@ public class GeneratorId : IGeneratorId
 
     public int GenerateApartmentId()
     {
-        return  ++_apartmentInstanceCounter;
+        return  --_apartmentInstanceCounter;
     }
 }

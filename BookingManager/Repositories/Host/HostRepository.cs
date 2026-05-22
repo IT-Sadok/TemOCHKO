@@ -42,4 +42,14 @@ public class HostRepository :  IHostRepository
     {
         _storageContext.UpdateHost(host);
     }
+
+    public void SaveData()
+    {
+        _storageContext.SaveHosts();
+    }
+
+    public int GetHostsCount()
+    {
+        return _storageContext.GetHostsCount();
+    }
 }

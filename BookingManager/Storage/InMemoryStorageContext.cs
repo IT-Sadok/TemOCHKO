@@ -24,16 +24,16 @@ public class InMemoryStorageContext : IStorageContext
         _hosts.Add(multiUnitHost);
         _hosts.Add(agencyHost);
 
-        var comnataUPetrovni = new Apartment(_idGenerator.GenerateApartmentId(), privateHost.Id, "Comnata V Babyli", ApartmentType.PrivateRoom, 10,
+        var comnataUPetrovni = new Apartment(_idGenerator.GenerateApartmentId(), privateHost.HostId, "Comnata V Babyli", ApartmentType.PrivateRoom, 10,
             30.00m, 30, 5);
         _apartments.Add(comnataUPetrovni);
-        var comnataSPetrovnoi = new Apartment(_idGenerator.GenerateApartmentId(), privateHost.Id, "Comnata Babyli", ApartmentType.SharedRoom, 20, 20, 365, 1);
+        var comnataSPetrovnoi = new Apartment(_idGenerator.GenerateApartmentId(), privateHost.HostId, "Comnata Babyli", ApartmentType.SharedRoom, 20, 20, 365, 1);
         _apartments.Add(comnataSPetrovnoi);
         
         // Vasylii
         var vasyliiApt1 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            multiUnitHost.Id, 
+            multiUnitHost.HostId, 
             "Cozy Kyiv Center Studio", 
             ApartmentType.EntireApartment, 
             35.5, 
@@ -44,7 +44,7 @@ public class InMemoryStorageContext : IStorageContext
 
         var vasyliiApt2 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            multiUnitHost.Id, 
+            multiUnitHost.HostId, 
             "Quiet Obolon Private Room", 
             ApartmentType.PrivateRoom, 
             18.0, 
@@ -55,7 +55,7 @@ public class InMemoryStorageContext : IStorageContext
 
         var vasyliiApt3 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            multiUnitHost.Id, 
+            multiUnitHost.HostId, 
             "Student Friendly Shared Dorm", 
             ApartmentType.SharedRoom, 
             25.0, 
@@ -71,7 +71,7 @@ public class InMemoryStorageContext : IStorageContext
         // Agency
         var agencyApt1 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            agencyHost.Id, 
+            agencyHost.HostId, 
             "Luxury Pechersk Penthouse", 
             ApartmentType.EntireApartment, 
             120.0, 
@@ -82,7 +82,7 @@ public class InMemoryStorageContext : IStorageContext
 
         var agencyApt2 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            agencyHost.Id, 
+            agencyHost.HostId, 
             "Modern Lviv Balcony Flat", 
             ApartmentType.EntireApartment, 
             65.0, 
@@ -93,7 +93,7 @@ public class InMemoryStorageContext : IStorageContext
 
         var agencyApt3 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            agencyHost.Id, 
+            agencyHost.HostId, 
             "Khreschatyk Business Suite", 
             ApartmentType.EntireApartment, 
             80.5, 
@@ -104,7 +104,7 @@ public class InMemoryStorageContext : IStorageContext
 
         var agencyApt4 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            agencyHost.Id, 
+            agencyHost.HostId, 
             "Odessa Sea Breeze Studio", 
             ApartmentType.EntireApartment, 
             45.0, 
@@ -115,7 +115,7 @@ public class InMemoryStorageContext : IStorageContext
 
         var agencyApt5 = new Apartment(
             _idGenerator.GenerateApartmentId(), 
-            agencyHost.Id, 
+            agencyHost.HostId, 
             "Premium Podil Private Suite", 
             ApartmentType.PrivateRoom, 
             30.0, 
@@ -138,6 +138,11 @@ public class InMemoryStorageContext : IStorageContext
         return _hosts;
     }
 
+    public IEnumerable<Apartment> GetAllApartments()
+    {
+        return _apartments;
+    }
+
     public void AddHost(Host host)
     {
         _hosts.Add(host);
@@ -145,7 +150,7 @@ public class InMemoryStorageContext : IStorageContext
 
     public Host GetHost(int hostId)
     {
-        return _hosts.FirstOrDefault(host => host.Id == hostId);
+        return _hosts.FirstOrDefault(host => host.HostId == hostId);
     }
 
     public Host GetHost(string name)
@@ -155,7 +160,7 @@ public class InMemoryStorageContext : IStorageContext
 
     public bool RemoveHost(int hostId)
     {
-        var hostToRemove = _hosts.FirstOrDefault(host => host.Id == hostId);
+        var hostToRemove = _hosts.FirstOrDefault(host => host.HostId == hostId);
         if (hostToRemove != null)
             return _hosts.Remove(hostToRemove); 
         return false; 
@@ -164,11 +169,26 @@ public class InMemoryStorageContext : IStorageContext
     public void UpdateHost(Host host)
     {
         for (int i = 0; i < _hosts.Count; i++)  
-            if (_hosts[i].Id == host.Id) _hosts[i] = host;
+            if (_hosts[i].HostId == host.HostId) _hosts[i] = host;
     }
 
     public IEnumerable<Apartment> GetApartmentsOfHost(int hostId)
     {
         return _apartments.Where(apartment => apartment.HostId == hostId);
+    }
+
+    public void SaveHosts()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SaveApartments()
+    {
+        throw new NotImplementedException();
+    }
+
+    public int GetHostsCount()
+    {
+        throw new NotImplementedException();
     }
 }

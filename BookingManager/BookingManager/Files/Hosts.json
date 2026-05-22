@@ -1,0 +1,29 @@
+[
+  {
+    "HostId": 1,
+    "FirstName": "Valentina",
+    "LastName": "Petrovna",
+    "Type": 0,
+    "Email": "valentinapetrovna@gmail.com",
+    "Phone": "\u002B380671234567",
+    "DateOfBirth": "1960-07-24T00:00:00"
+  },
+  {
+    "HostId": 2,
+    "FirstName": "Vasylii",
+    "LastName": "Temshik",
+    "Type": 1,
+    "Email": "yatemschik@gmail.com",
+    "Phone": "\u002B380996767676",
+    "DateOfBirth": "2000-01-01T00:00:00"
+  },
+  {
+    "HostId": 3,
+    "FirstName": "Vazhnyi",
+    "LastName": "Bymazhniy",
+    "Type": 2,
+    "Email": "companyagent@gmail.com",
+    "Phone": "\u002B38099001122",
+    "DateOfBirth": "1991-08-24T00:00:00"
+  }
+]

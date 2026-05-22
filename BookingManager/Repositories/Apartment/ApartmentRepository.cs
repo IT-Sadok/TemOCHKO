@@ -14,4 +14,9 @@ public class ApartmentRepository : IApartmentRepository
     {
         return _storageContext.GetApartmentsOfHost(hostId);
     }
+
+    public void SaveData()
+    {
+        _storageContext.SaveApartments();
+    }
 }

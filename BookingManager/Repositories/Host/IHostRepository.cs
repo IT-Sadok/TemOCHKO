@@ -10,4 +10,6 @@ public interface IHostRepository
     Host GetHost(int hostId);
     Host GetHost(string name);
     void UpdateHost(Host host);
+    void SaveData();
+    int GetHostsCount();
 }

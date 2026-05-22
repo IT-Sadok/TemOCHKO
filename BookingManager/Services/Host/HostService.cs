@@ -54,7 +54,7 @@ public class HostService : IHostService
         var errors = host.Validate();
         if (errors.Count > 0)
             throw new ValidationException(String.Join(Environment.NewLine, errors.Select(s => s.errorMessage)));
-        var newHost = new Host(_idGenerator.GenerateHostId(), host.FirstName, host.LastName, host.Type, host.Email, host.Phone, host.DateOfBirth);
+        var newHost = new Host(GetHostsCount() + 1, host.FirstName, host.LastName, host.Type, host.Email, host.Phone, host.DateOfBirth);
         _hostRepository.AddHost(newHost);
     }
 
@@ -65,5 +65,15 @@ public class HostService : IHostService
             throw new ValidationException(String.Join(Environment.NewLine, errors.Select(s => s.errorMessage)));
         var hostDbModel = new Host(hostDetailsDto.Id,  hostDetailsDto.FirstName, hostDetailsDto.LastName, hostDetailsDto.Type, hostDetailsDto.Email, hostDetailsDto.Phone, hostDetailsDto.DateOfBirth);
         _hostRepository.UpdateHost(hostDbModel);
+    }
+
+    public void SaveHosts()
+    {
+        _hostRepository.SaveData();
+    }
+
+    public int GetHostsCount()
+    {
+        return _hostRepository.GetHostsCount();
     }
 }

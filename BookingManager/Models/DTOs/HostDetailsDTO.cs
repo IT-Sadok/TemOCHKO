@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Runtime.InteropServices.JavaScript;
 
 namespace Models.DTOs;
@@ -5,14 +6,17 @@ namespace Models.DTOs;
 public class HostDetailsDTO
 {
     public int Id { get; }
+    [DisplayName ("First Name")]
     public string FirstName { get; }
+    [DisplayName ("Last Name")]
     public string LastName { get; }
     public HostType Type { get; }
     public string Email { get; }
     public string Phone { get; }
+    [DisplayName("Date Of Birth")]
     public DateTime DateOfBirth { get; }
 
-    public HostDetailsDTO(Host host) : this(host.Id, host.FirstName, host.LastName, host.Type, host.Email, host.Phone, host.DateOfBirth)
+    public HostDetailsDTO(Host host) : this(host.HostId, host.FirstName, host.LastName, host.Type, host.Email, host.Phone, host.DateOfBirth)
     {
         
     }

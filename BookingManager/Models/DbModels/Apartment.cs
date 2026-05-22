@@ -2,8 +2,8 @@ namespace Models;
 
 public class Apartment
 {
-    public int Id { get; private set;  }
-    public int HostId { get; private set; }
+    public int Id { get; set;  }
+    public int HostId { get; set; }
     public string Name { get; set; }
     public ApartmentType Type { get; set; }
     public double SquareMeters { get; set; }
@@ -23,4 +23,6 @@ public class Apartment
         MinimumStay = minimumStay;
         Rating = rating;
     }
+    
+    public Apartment() {}
 }

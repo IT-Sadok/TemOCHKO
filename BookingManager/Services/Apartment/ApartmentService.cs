@@ -18,4 +18,9 @@ public class ApartmentService : IApartmentService
             apartList.Add(new ApartmentListDTO(apartmentDb));
         return apartList;
     }
+
+    public void SaveApartments()
+    {
+        _apartmentRepository.SaveData();
+    }
 }

@@ -11,4 +11,6 @@ public interface IHostService
     bool RemoveHost(int id);
     void AddHost(HostCreateDTO host);
     void UpdateHost(HostDetailsDTO host);
+    void SaveHosts();
+    int GetHostsCount();
 }

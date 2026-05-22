@@ -6,7 +6,7 @@ namespace BookingManager;
 
 class Program
 {
-    private static InMemoryStorageContext storageContext = new InMemoryStorageContext();
+    private static IStorageContext storageContext = new JsonStorageContext();
     
     static void Main(string[] args)
     {

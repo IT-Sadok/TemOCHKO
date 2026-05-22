@@ -1,8 +1,10 @@
-﻿namespace Models;
+﻿using System.ComponentModel;
+
+namespace Models;
 
 public class Host
 {
-    public int Id { get; private set;  }
+    public int HostId { get; set;  }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public HostType Type { get; set; }
@@ -13,7 +15,7 @@ public class Host
     public Host(int hostId, string firstName, string lastName, HostType type,  string email, string phone,
         DateTime dateOfBirth)
     {
-        Id = hostId;
+        HostId = hostId;
         FirstName = firstName;
         LastName = lastName;
         Type = type;
@@ -21,4 +23,6 @@ public class Host
         Phone = phone;
         DateOfBirth = dateOfBirth;
     }
+    
+    public Host() {}
 }

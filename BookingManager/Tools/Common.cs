@@ -1,4 +1,7 @@
-﻿using Models;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using Models;
 
 namespace Tools;
 
@@ -86,5 +89,25 @@ public class Common
         
         Console.WriteLine("Successfully validated host position.");
         return (HostType)(choice - 1);
+    }
+    
+    public static string GetDisplayName(Type type, string propertyName)
+    {
+        PropertyInfo? property = type.GetProperty(propertyName);
+        if (property == null) return propertyName;
+
+        var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
+        if (displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name))
+        {
+            return displayAttribute.Name;
+        }
+
+        var displayNameAttribute = property.GetCustomAttribute<DisplayNameAttribute>();
+        if (displayNameAttribute != null && !string.IsNullOrEmpty(displayNameAttribute.DisplayName))
+        {
+            return displayNameAttribute.DisplayName;
+        }
+
+        return propertyName;
     }
 }
