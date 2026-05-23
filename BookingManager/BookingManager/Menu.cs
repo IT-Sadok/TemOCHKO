@@ -21,7 +21,7 @@ public class Menu
         _apartmentService = apartmentService;
     }
     
-    private async Task UpdateState(string command)
+    private void UpdateState(string command)
     {
         command = command.Trim();
         command = command.ToLower();
@@ -83,7 +83,7 @@ public class Menu
         Environment.Exit(0);
     }
 
-    private async Task ReadUserInput()
+    private void ReadUserInput()
     {
         while (true)
         {
@@ -102,7 +102,7 @@ public class Menu
         }
     }
 
-    public async Task ShowMenuAsync()
+    public void ShowMenu()
     {
         while (_appState != MenuList.End)
         {

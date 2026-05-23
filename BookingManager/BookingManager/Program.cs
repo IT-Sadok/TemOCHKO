@@ -16,6 +16,6 @@ class Program
         IApartmentService apartmentService = new ApartmentService(apartmentRepository);
         Menu menu = new Menu(hostService, apartmentService);
 
-        menu.ShowMenuAsync();
+        menu.ShowMenu();
     }
 }
