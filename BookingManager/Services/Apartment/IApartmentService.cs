@@ -1,10 +1,9 @@
-using Models;
 using Models.DTOs;
 
-namespace Services;
+namespace Services.Apartment;
 
 public interface IApartmentService
 {
-    List<ApartmentListDTO> GetApartmentsOfHost(int hostId);
+    List<ApartmentListItemDTO> GetApartmentsOfHost(int hostId);
     void SaveApartments();
 }

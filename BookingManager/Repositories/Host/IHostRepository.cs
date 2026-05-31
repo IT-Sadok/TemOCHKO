@@ -1,15 +1,15 @@
-using Models;
+using Models.DTOs;
 
-namespace Repositories;
+namespace Repositories.Host;
 
 public interface IHostRepository
 {
-    List<Host> GetHosts();
-    void AddHost(Host host); 
+    List<Models.Host> GetHosts();
+    void AddHost(HostCreateDTO host); 
     bool RemoveHost(int hostId);
-    Host GetHost(int hostId);
-    Host GetHost(string name);
-    void UpdateHost(Host host);
-    void SaveData();
+    Models.Host GetHost(int hostId);
+    Models.Host GetHost(string name);
+    void UpdateHost(Models.Host host);
+    void SaveHosts();
     int GetHostsCount();
 }

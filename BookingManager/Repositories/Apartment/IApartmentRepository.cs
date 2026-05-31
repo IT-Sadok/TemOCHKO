@@ -1,9 +1,8 @@
-using Models;
-
-namespace Repositories;
+namespace Repositories.Apartment;
 
 public interface IApartmentRepository
 {
-    IEnumerable<Apartment> GetApartmentsOfHost(int hostId);
-    void SaveData();
+    IEnumerable<Models.Apartment> GetApartmentsOfHost(int hostId);
+    IEnumerable<Models.Apartment> GetAllApartments();
+    void SaveApartments();
 }

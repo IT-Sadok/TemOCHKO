@@ -1,11 +1,10 @@
-using Models;
 using Models.DTOs;
 
-namespace Services;
+namespace Services.Host;
 
 public interface IHostService
 {
-    List<HostListDTO> GetHostsList();
+    List<HostListItemDTO> GetHostsList();
     HostDetailsDTO GetHost(int id);
     HostDetailsDTO GetHost(string name);
     bool RemoveHost(int id);

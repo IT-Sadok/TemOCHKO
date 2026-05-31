@@ -3,6 +3,8 @@ using Models;
 using Models.DTOs;
 using Repositories;
 using Services;
+using Services.Apartment;
+using Services.Host;
 using Tools;
 
 namespace BookingManager;
@@ -244,7 +246,6 @@ public class Menu
         }
     }
     
-    // Prompt the user to create host, and returns Host Create entity
     private HostCreateDTO PromptToCreateHost()
     {
         Console.WriteLine("Menu For Creating A Host: ");
@@ -259,7 +260,15 @@ public class Menu
         string phone = Console.ReadLine();
         DateTime dateOfBirth = Common.PromptUserForDateInConsole("Enter host's date of birth: ");
         
-        return new HostCreateDTO(firstName, lastName, hostType, email, phone, dateOfBirth);
+        return new HostCreateDTO
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            Type = hostType,
+            Email = email,
+            Phone = phone,
+            DateOfBirth = dateOfBirth
+        };
     }
 
     private HostDetailsDTO PromptToUpdateHost(string command)
@@ -329,6 +338,15 @@ public class Menu
                 return null;
         }
         
-        return new HostDetailsDTO(hostToUpdate.Id, firstName, lastName, type, email, phone, dateOfBirth);
+        return new HostDetailsDTO
+        {
+            Id = hostToUpdate.Id,
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
+            Phone = phone,
+            Type = type,
+            DateOfBirth = dateOfBirth
+        };
     }
 }

@@ -1,7 +1,7 @@
 using Models.DTOs;
-using Repositories;
+using Repositories.Apartment;
 
-namespace Services;
+namespace Services.Apartment;
 
 public class ApartmentService : IApartmentService
 {
@@ -11,16 +11,26 @@ public class ApartmentService : IApartmentService
         _apartmentRepository = apartmentRepository;
     }
     
-    public List<ApartmentListDTO> GetApartmentsOfHost(int hostId)
+    public List<ApartmentListItemDTO> GetApartmentsOfHost(int hostId)
     {
-        var apartList = new List<ApartmentListDTO>();
+        var apartList = new List<ApartmentListItemDTO>();
         foreach (var apartmentDb in _apartmentRepository.GetApartmentsOfHost(hostId))
-            apartList.Add(new ApartmentListDTO(apartmentDb));
+        {
+            apartList.Add(new ApartmentListItemDTO
+            {
+                Id = apartmentDb.Id,
+                HostId = apartmentDb.HostId,
+                Name = apartmentDb.Name,
+                Type = apartmentDb.Type,
+                PricePerNight = apartmentDb.PricePerNight,
+                Rating = apartmentDb.Rating,
+            });
+        }
         return apartList;
     }
 
     public void SaveApartments()
     {
-        _apartmentRepository.SaveData();
+        _apartmentRepository.SaveApartments();
     }
 }
