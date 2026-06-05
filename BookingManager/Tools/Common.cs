@@ -54,9 +54,9 @@ public class Common
         if (!ChoiceNumberIsValid(month)) return false;
         if (!ChoiceNumberIsValid(year)) return false;
 
-        var dayNum = int.Parse(day);
-        var monthNum = int.Parse(month);
-        var yearNum = int.Parse(year);
+        var dayNumValid = int.TryParse(day, out int dayNum);
+        var monthNumValid = int.TryParse(month, out int monthNum);
+        var yearNumValid = int.TryParse(year, out int yearNum);
 
         if (dayNum < 1 || dayNum > 31) return false;
         if (monthNum < 1 || monthNum > 12) return false;
@@ -83,7 +83,7 @@ public class Common
             userInput = Console.ReadLine();
             if (ChoiceNumberIsValid(userInput)) 
             {
-                choice  = int.Parse(userInput);
+                var choiceValid  = int.TryParse(userInput, out choice);
             }
         } while (choice < 1 || choice > hostTypeLength);
         

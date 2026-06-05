@@ -11,10 +11,12 @@ public class ApartmentService : IApartmentService
         _apartmentRepository = apartmentRepository;
     }
     
-    public List<ApartmentListItemDTO> GetApartmentsOfHost(int hostId)
+    public async Task<List<ApartmentListItemDTO>> GetApartmentsOfHostAsync(int hostId)
     {
         var apartList = new List<ApartmentListItemDTO>();
-        foreach (var apartmentDb in _apartmentRepository.GetApartmentsOfHost(hostId))
+        var hostDbApartments = await _apartmentRepository.GetApartmentsOfHostAsync(hostId);
+        
+        foreach (var apartmentDb in hostDbApartments)
         {
             apartList.Add(new ApartmentListItemDTO
             {
@@ -29,8 +31,8 @@ public class ApartmentService : IApartmentService
         return apartList;
     }
 
-    public void SaveApartments()
+    public Task SaveApartmentsAsync()
     {
-        _apartmentRepository.SaveApartments();
+        return _apartmentRepository.SaveApartmentsAsync();
     }
 }

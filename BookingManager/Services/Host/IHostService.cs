@@ -4,12 +4,12 @@ namespace Services.Host;
 
 public interface IHostService
 {
-    List<HostListItemDTO> GetHostsList();
-    HostDetailsDTO GetHost(int id);
-    HostDetailsDTO GetHost(string name);
-    bool RemoveHost(int id);
-    void AddHost(HostCreateDTO host);
-    void UpdateHost(HostDetailsDTO host);
-    void SaveHosts();
-    int GetHostsCount();
+    Task<List<HostListItemDTO>> GetHostsListAsync();
+    Task<HostDetailsDTO> GetHostAsync(int id);
+    Task<HostDetailsDTO> GetHostAsync(string name);
+    Task<bool> RemoveHostAsync(int id);
+    Task AddHostAsync(HostCreateDTO host);
+    Task UpdateHostAsync(HostDetailsDTO host);
+    Task SaveHostsAsync();
+    Task<int> GetHostsCountAsync();
 }

@@ -10,7 +10,7 @@ namespace BookingManager;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         IHostRepository hostRepository = new HostRepository();
         IApartmentRepository apartmentRepository = new ApartmentRepository();
@@ -18,6 +18,6 @@ class Program
         IApartmentService apartmentService = new ApartmentService(apartmentRepository);
         Menu menu = new Menu(hostService, apartmentService);
 
-        menu.ShowMenu();
+        await menu.ShowMenuAsync();
     }
 }

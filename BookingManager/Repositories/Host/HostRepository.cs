@@ -10,47 +10,53 @@ public class HostRepository :  IHostRepository
     private static readonly string s_dataBasePath = Path.Combine(GetServicesDirectory(), s_fileName);
     private List<Models.Host> _hosts = new List<Models.Host>();
     private int _instanceCounter = 0;
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
     
-    private class FileWrapper
+    public class FileWrapper
     {
-        internal int InstanceCounter { get; set; }
-        internal List<Models.Host> Hosts { get; set; }
+        public int InstanceCounter { get; set; }
+        public List<Models.Host> Hosts { get; set; }
     }
     
-    private void Init()
+    private async Task Init()
     {
-        if (_hosts.Count > 0) return; 
+        await _semaphore.WaitAsync();
+        try
+        {
+            if (_hosts.Count > 0) return;
 
-        if (!File.Exists(HostsFilePath()))
-        {
-            CreateMockStorage();
-        }
-        else
-        {
-            string jsonData = File.ReadAllText(HostsFilePath());
-            var data = JsonSerializer.Deserialize<FileWrapper>(jsonData);
-            if (data != null)
+            if (!File.Exists(HostsFilePath()))
             {
-                _instanceCounter = data.InstanceCounter;
-                _hosts = data.Hosts;
+                await CreateMockStorageAsync();
             }
             else
             {
-                _instanceCounter = 0;
-                _hosts = new List<Models.Host>();
+                string jsonData = await File.ReadAllTextAsync(HostsFilePath());
+                await using FileStream openStream = File.OpenRead(HostsFilePath());
+                var data = await JsonSerializer.DeserializeAsync<FileWrapper>(openStream,
+                    new JsonSerializerOptions {IncludeFields = true});
+                if (data != null)
+                {
+                    _instanceCounter = data.InstanceCounter;
+                    _hosts = data.Hosts;
+                }
             }
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
-    public List<Models.Host> GetHosts()
+    public async Task<List<Models.Host>> GetHostsAsync()
     {
-        Init();
+        await Init();
         return _hosts;
     } 
     
-    public void AddHost(HostCreateDTO host)
+    public async Task AddHostAsync(HostCreateDTO host)
     {
-        Init();
+        await Init();
         var hostDb = new Models.Host 
         {
             HostId = ++_instanceCounter,
@@ -64,46 +70,46 @@ public class HostRepository :  IHostRepository
         _hosts.Add(hostDb);
     }
 
-    public bool RemoveHost(int hostId)
+    public async Task<bool> RemoveHostAsync(int hostId)
     {
-        Init();
+        await Init();
         return _hosts.RemoveAll(h => h.HostId == hostId) > 0;
     }
 
-    public Models.Host GetHost(int hostId)
+    public async Task<Models.Host> GetHostAsync(int hostId)
     {
-        Init();
+        await Init();
         return _hosts.FirstOrDefault(h => h.HostId == hostId);
     }
 
-    public Models.Host GetHost(string name)
+    public async Task<Models.Host> GetHostAsync(string name)
     {
-        Init();
+        await Init();
         return _hosts.FirstOrDefault(host => host.FirstName.ToLower() + " " + host.LastName.ToLower() == name);
     }
 
-    public void UpdateHost(Models.Host host)
+    public async Task UpdateHostAsync(Models.Host host)
     {
-        Init();
+        await Init();
         for (int i = 0; i < _hosts.Count; i++)  
             if (_hosts[i].HostId == host.HostId) _hosts[i] = host;
     }
     
-    public int GetHostsCount()
+    public async Task<int> GetHostsCountAsync()
     {
-        Init();
+        await Init();
         return _hosts.Count;
     }
     
-    private void CreateMockStorage()
+    private async Task CreateMockStorageAsync()
     {
         InMemoryStorageContext context = new InMemoryStorageContext();
         _hosts = context.GetAllHosts().ToList();
         _instanceCounter = _hosts.Count;
-        SaveHosts();
+        await SaveHostsAsync();
     }
     
-    public void SaveHosts()
+    public async Task SaveHostsAsync()
     {
         Directory.CreateDirectory(s_dataBasePath);
         var data = new FileWrapper
@@ -111,8 +117,15 @@ public class HostRepository :  IHostRepository
             InstanceCounter = _instanceCounter,
             Hosts = _hosts
         };
-        string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(HostsFilePath(), jsonString);
+        
+        var options = new JsonSerializerOptions 
+        { 
+            WriteIndented = true,
+            IncludeFields = true 
+        };
+        
+        string jsonString =  JsonSerializer.Serialize(data, options);
+        await File.WriteAllTextAsync(HostsFilePath(), jsonString);
     }
     
     private static string? GetServicesDirectory()

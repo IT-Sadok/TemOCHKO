@@ -23,7 +23,7 @@ public class Menu
         _apartmentService = apartmentService;
     }
     
-    private void UpdateState(string command)
+    private async Task UpdateState(string command)
     {
         command = command.Trim();
         command = command.ToLower();
@@ -38,37 +38,37 @@ public class Menu
                 break;
             case "remove host":
                 _appState = MenuList.HostRemove;
-                RemoveHostOperations();
+                await RemoveHostOperationsAsync();
                 break;
             case "add host":
                 _appState = MenuList.HostAdd;
-                AddHostOperations();
+                await AddHostOperations();
                 break;
             case "save changes":
                 _appState = MenuList.SaveChanges;
-                SaveChanges();
+                await SaveChangesAsync();
                 break;
             default:
                 switch (_appState)
                 {
                     case MenuList.Default:
                         _appState =  MenuList.HostDetails;
-                        ShowHostDetails(command);
+                        await ShowHostDetailsAsync(command);
                         break;
                     default:
                         Console.WriteLine("Unknown command. Please try again.");
                         _appState = MenuList.Default;
-                        DefaultState();
+                        await DefaultState();
                         break;
                 }
                 break;
         }
     }
 
-    private void DefaultState()
+    private async Task DefaultState()
     {
         Console.WriteLine("Here is the list of all hosts: ");
-        foreach (var host in _hostService.GetHostsList())
+        foreach (var host in await _hostService.GetHostsListAsync())
         {
             Console.WriteLine($"Host: {host.FirstName} {host.LastName}, Id: {host.Id}, {host.Type}, phone: {host.Phone}");
         }
@@ -104,17 +104,17 @@ public class Menu
         }
     }
 
-    public void ShowMenu()
+    public async Task ShowMenuAsync()
     {
         while (_appState != MenuList.End)
         {
-            DefaultState();
+            await DefaultState();
             ReadUserInput();
-            UpdateState(_command);
+            await UpdateState(_command);
         }
     }
     
-    private void RemoveHostOperations()
+    private async Task RemoveHostOperationsAsync()
     {
         Console.Write("Input the id of host you want to remove: ");
         var id = Console.ReadLine();
@@ -126,8 +126,8 @@ public class Menu
             return;
         }
         
-        int numId = int.Parse(id);
-        if (_hostService.RemoveHost(numId))
+        var success = int.TryParse(id, out int numId);
+        if (await _hostService.RemoveHostAsync(numId))
             Console.WriteLine("Host removed");
         else
             Console.WriteLine("Host not found");
@@ -135,13 +135,13 @@ public class Menu
         _appState = MenuList.Default;
     }
     
-    private void AddHostOperations()
+    private async Task AddHostOperations()
     {
         var hostCreateDto = PromptToCreateHost();
 
         try
         {
-            _hostService.AddHost(hostCreateDto);
+            await _hostService.AddHostAsync(hostCreateDto);
             Console.WriteLine("Host added");
         }
         catch (ValidationException e)
@@ -156,9 +156,9 @@ public class Menu
         }
     }
 
-    private void UpdateHostOperations(string command)
+    private async Task UpdateHostOperationsAsync(string command)
     {
-        var hostUpdateDto = PromptToUpdateHost(command);
+        var hostUpdateDto = await PromptToUpdateHostAsync(command);
 
         if (hostUpdateDto == null)
         {
@@ -169,7 +169,7 @@ public class Menu
         
         try
         {
-            _hostService.UpdateHost(hostUpdateDto);
+            await _hostService.UpdateHostAsync(hostUpdateDto);
             Console.WriteLine("Host updated");
         }
         catch (ValidationException e)
@@ -184,16 +184,16 @@ public class Menu
         }
     }
     
-    private void SaveChanges()
+    private async Task SaveChangesAsync()
     {
-        _hostService.SaveHosts();
-        _apartmentService.SaveApartments();
+        await _hostService.SaveHostsAsync();
+        await _apartmentService.SaveApartmentsAsync();
         Console.WriteLine("\nChanges saved\n");
         
         _appState = MenuList.Default;
     }
 
-    private void ShowHostDetails(string command)
+    private async Task ShowHostDetailsAsync(string command)
     {
         Console.WriteLine();
         
@@ -202,10 +202,13 @@ public class Menu
 
         HostDetailsDTO hostDetails;
         if (Common.ChoiceNumberIsValid(command))
-            hostDetails = _hostService.GetHost(int.Parse(command));
+        {
+            int.TryParse(command, out int hostId);
+            hostDetails = await _hostService.GetHostAsync(hostId);
+        }
         else
         {
-            hostDetails = _hostService.GetHost(command);
+            hostDetails = await _hostService.GetHostAsync(command);
         }
 
         if (hostDetails == null)
@@ -218,7 +221,7 @@ public class Menu
         Console.WriteLine($"Name: {hostDetails.FirstName}, Surname: {hostDetails.LastName}, {hostDetails.Type},\nEmail: {hostDetails.Email}, Phone: {hostDetails.Phone}, Date of birth: {hostDetails.DateOfBirth}");
         Console.WriteLine();
         
-        var apartList = _apartmentService.GetApartmentsOfHost(hostDetails.Id);
+        var apartList = await _apartmentService.GetApartmentsOfHostAsync(hostDetails.Id);
         if (apartList.Count <= 0)
         {
             Console.WriteLine("There are no apartments for this host. ");
@@ -238,7 +241,7 @@ public class Menu
         {
             case "update host":
                 _appState = MenuList.HostUpdate;
-                UpdateHostOperations(command);
+                await UpdateHostOperationsAsync(command);
                 break;
             default:
                 _appState = MenuList.Default;
@@ -271,7 +274,7 @@ public class Menu
         };
     }
 
-    private HostDetailsDTO PromptToUpdateHost(string command)
+    private async Task<HostDetailsDTO> PromptToUpdateHostAsync(string command)
     {
         Console.WriteLine();
         
@@ -280,10 +283,13 @@ public class Menu
 
         HostDetailsDTO hostToUpdate;
         if (Common.ChoiceNumberIsValid(command))
-            hostToUpdate = _hostService.GetHost(int.Parse(command));
+        {
+            int.TryParse(command, out int hostId);
+            hostToUpdate = await _hostService.GetHostAsync(hostId);
+        }
         else
         {
-            hostToUpdate = _hostService.GetHost(command);
+            hostToUpdate = await _hostService.GetHostAsync(command);
         }
         
         if (hostToUpdate == null)

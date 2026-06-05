@@ -2,7 +2,7 @@ namespace Repositories.Apartment;
 
 public interface IApartmentRepository
 {
-    IEnumerable<Models.Apartment> GetApartmentsOfHost(int hostId);
-    IEnumerable<Models.Apartment> GetAllApartments();
-    void SaveApartments();
+    Task<IEnumerable<Models.Apartment>> GetApartmentsOfHostAsync(int hostId);
+    Task<IEnumerable<Models.Apartment>> GetAllApartmentsAsync();
+    Task SaveApartmentsAsync();
 }

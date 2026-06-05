@@ -8,38 +8,62 @@ public class ApartmentRepository : IApartmentRepository
     private static readonly string SFileName= "Files";
     private static readonly string SDataBasePath = Path.Combine(GetServicesDirectory(), SFileName);
     private List<Models.Apartment> _apartments = new List<Models.Apartment>();
-
-    private void Init()
+    private int _instanceCounter = 0;
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+    
+    public class FileWrapper
     {
-        if (_apartments.Count > 0) return; 
+        public int InstanceCounter { get; set; }
+        public List<Models.Apartment> Apartments { get; set; }
+    }
 
-        if (!File.Exists(ApartmentsFilePath()))
+    private async Task Init()
+    {
+        await _semaphore.WaitAsync();
+        try
         {
-            CreateMockStorage();
+            if (_apartments.Count > 0) return;
+
+            if (!File.Exists(ApartmentsFilePath()))
+            {
+                await CreateMockStorage();
+            }
+            else
+            {
+                string jsonData = await File.ReadAllTextAsync(ApartmentsFilePath());
+                await using FileStream openStream = File.OpenRead(ApartmentsFilePath());
+                var data = await JsonSerializer.DeserializeAsync<FileWrapper>(openStream,
+                    new JsonSerializerOptions {IncludeFields = true});
+                if (data != null)
+                {
+                    _instanceCounter = data.InstanceCounter;
+                    _apartments = data.Apartments;
+                }
+            }
         }
-        else
+        finally
         {
-            string apartmentsJson = File.ReadAllText(ApartmentsFilePath());
-            _apartments = JsonSerializer.Deserialize<List<Models.Apartment>>(apartmentsJson) ?? new List<Models.Apartment>();
+            _semaphore.Release();
         }
     }
     
-    private void CreateMockStorage()
+    private async Task CreateMockStorage()
     {
         InMemoryStorageContext memoryStorageContext = new InMemoryStorageContext();
         _apartments = memoryStorageContext.GetAllApartments().ToList();
-        SaveApartments();
+        _instanceCounter = _apartments.Count;
+        await SaveApartmentsAsync();
     }
     
-    public IEnumerable<Models.Apartment> GetApartmentsOfHost(int hostId)
+    public async Task<IEnumerable<Models.Apartment>> GetApartmentsOfHostAsync(int hostId)
     {
-        Init();
+        await Init();
         return _apartments.Where(apartment => apartment.HostId == hostId);
     }
     
-    public IEnumerable<Models.Apartment> GetAllApartments()
+    public async Task<IEnumerable<Models.Apartment>> GetAllApartmentsAsync()
     {
-        Init();
+        await Init();
         return _apartments;
     }
     
@@ -54,10 +78,15 @@ public class ApartmentRepository : IApartmentRepository
         return Path.Combine(SDataBasePath, "Apartments.json");
     }
     
-    public void SaveApartments()
+    public async Task SaveApartmentsAsync()
     {
         Directory.CreateDirectory(SDataBasePath);
-        string jsonString = JsonSerializer.Serialize(_apartments, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(ApartmentsFilePath(), jsonString);
+        var data = new FileWrapper()
+        {
+            InstanceCounter = _instanceCounter,
+            Apartments = _apartments
+        };
+        string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true, IncludeFields = true});
+        await File.WriteAllTextAsync(ApartmentsFilePath(), jsonString);
     }
 }

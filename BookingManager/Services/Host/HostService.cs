@@ -13,11 +13,12 @@ public class HostService : IHostService
         _hostRepository = hostRepository;
     }
 
-    public List<HostListItemDTO> GetHostsList()
+    public async Task<List<HostListItemDTO>> GetHostsListAsync()
     {
         var res = new List<HostListItemDTO>();
-
-        foreach (var hostDbModel in _hostRepository.GetHosts())
+        var hostDbModels = await _hostRepository.GetHostsAsync();
+        
+        foreach (var hostDbModel in hostDbModels)
         {
             res.Add(new HostListItemDTO
             {
@@ -32,9 +33,10 @@ public class HostService : IHostService
         return res;
     }
 
-    public HostDetailsDTO GetHost(int id)
+    public async Task<HostDetailsDTO> GetHostAsync(int id)
     {
-        var hostDbModel = _hostRepository.GetHost(id);
+        var hostDbModel = await _hostRepository.GetHostAsync(id);
+        if (hostDbModel == null) return null;
         return new HostDetailsDTO
         {
             Id = hostDbModel.HostId,
@@ -47,9 +49,10 @@ public class HostService : IHostService
         };
     }
 
-    public HostDetailsDTO GetHost(string name)
+    public async Task<HostDetailsDTO> GetHostAsync(string name)
     {
-        var hostDbModel = _hostRepository.GetHost(name);
+        var hostDbModel = await _hostRepository.GetHostAsync(name);
+        if (hostDbModel == null) return null;
         return new HostDetailsDTO
         {
             Id = hostDbModel.HostId,
@@ -62,20 +65,20 @@ public class HostService : IHostService
         };
     }
 
-    public bool RemoveHost(int id)
+    public Task<bool> RemoveHostAsync(int id)
     {
-        return _hostRepository.RemoveHost(id);
+        return _hostRepository.RemoveHostAsync(id);
     }
 
-    public void AddHost(HostCreateDTO host)
+    public async Task AddHostAsync(HostCreateDTO host)
     {
         var errors = host.Validate();
         if (errors.Count > 0)
             throw new ValidationException(String.Join(Environment.NewLine, errors.Select(s => s.errorMessage)));
-        _hostRepository.AddHost(host);
+        await _hostRepository.AddHostAsync(host);
     }
 
-    public void UpdateHost(HostDetailsDTO hostDetailsDto)
+    public async Task UpdateHostAsync(HostDetailsDTO hostDetailsDto)
     {
         var errors = hostDetailsDto.Validate();
         if (errors.Count > 0)
@@ -84,16 +87,16 @@ public class HostService : IHostService
         {
             HostId = hostDetailsDto.Id, FirstName = hostDetailsDto.FirstName, LastName = hostDetailsDto.LastName, Type = hostDetailsDto.Type, Email = hostDetailsDto.Email, Phone = hostDetailsDto.Phone, DateOfBirth = hostDetailsDto.DateOfBirth
         };
-        _hostRepository.UpdateHost(hostDbModel);
+        await _hostRepository.UpdateHostAsync(hostDbModel);
     }
 
-    public void SaveHosts()
+    public Task SaveHostsAsync()
     {
-        _hostRepository.SaveHosts();
+        return _hostRepository.SaveHostsAsync();
     }
 
-    public int GetHostsCount()
+    public Task<int> GetHostsCountAsync()
     {
-        return _hostRepository.GetHostsCount();
+        return _hostRepository.GetHostsCountAsync();
     }
 }

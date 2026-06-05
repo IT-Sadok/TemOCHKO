@@ -4,12 +4,12 @@ namespace Repositories.Host;
 
 public interface IHostRepository
 {
-    List<Models.Host> GetHosts();
-    void AddHost(HostCreateDTO host); 
-    bool RemoveHost(int hostId);
-    Models.Host GetHost(int hostId);
-    Models.Host GetHost(string name);
-    void UpdateHost(Models.Host host);
-    void SaveHosts();
-    int GetHostsCount();
+    Task<List<Models.Host>> GetHostsAsync();
+    Task AddHostAsync(HostCreateDTO host); 
+    Task<bool> RemoveHostAsync(int hostId);
+    Task<Models.Host> GetHostAsync(int hostId);
+    Task<Models.Host> GetHostAsync(string name);
+    Task UpdateHostAsync(Models.Host host);
+    Task SaveHostsAsync();
+    Task<int> GetHostsCountAsync();
 }

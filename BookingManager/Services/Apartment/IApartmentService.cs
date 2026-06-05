@@ -4,6 +4,6 @@ namespace Services.Apartment;
 
 public interface IApartmentService
 {
-    List<ApartmentListItemDTO> GetApartmentsOfHost(int hostId);
-    void SaveApartments();
+    Task<List<ApartmentListItemDTO>> GetApartmentsOfHostAsync(int hostId);
+    Task SaveApartmentsAsync();
 }
