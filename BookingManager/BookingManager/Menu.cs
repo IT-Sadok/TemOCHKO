@@ -48,6 +48,10 @@ public class Menu
                 _appState = MenuList.SaveChanges;
                 await SaveChangesAsync();
                 break;
+            case "race condition":
+                _appState = MenuList.RaceCondition;
+                await ShowcaseMultiThreadExample();
+                break;
             default:
                 switch (_appState)
                 {
@@ -77,6 +81,7 @@ public class Menu
         Console.WriteLine("Type \"Remove Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Add Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Save Changes\" to save changes into the file");
+        Console.WriteLine("Type \"Race condition\" to see and emulation of multithread race condition");
         Console.WriteLine("Type \"Exit\" to exit the program");
     }
 
@@ -354,5 +359,46 @@ public class Menu
             Type = type,
             DateOfBirth = dateOfBirth
         };
+    }
+
+    private async Task ShowcaseMultiThreadExample()
+    {
+        ApartmentListItemDTO apartment;
+        
+        Console.WriteLine("Creating a new apartment.");
+        apartment = new ApartmentListItemDTO
+        {
+            Id = -1,
+            HostId = -1,
+            Name = "New Apartment",
+            Type = ApartmentType.EntireApartment,
+            PricePerNight = 67,
+            Rating = 4.3
+        };
+        
+        object lockObject = new object();
+
+        Task hostTask1 = Task.Run(async () =>
+        {
+            lock (lockObject)
+            {
+                apartment.PricePerNight += 10;
+                Console.WriteLine("Host 1 added 10 to the price, now price is " + apartment.PricePerNight);
+                Task.Delay(100);
+            }
+        });
+
+        Task hostTask2 = Task.Run((async () =>
+        {
+            lock (lockObject)
+            {
+                apartment.PricePerNight -= 5;
+                Console.WriteLine("Host 2 substacted 5 from the price, now price is " + apartment.PricePerNight);
+                Task.Delay(100);
+            }
+        }));
+        
+        await Task.WhenAll(hostTask1, hostTask2);
+        _appState = MenuList.Default;
     }
 }

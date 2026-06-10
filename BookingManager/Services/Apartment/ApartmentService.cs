@@ -31,6 +31,26 @@ public class ApartmentService : IApartmentService
         return apartList;
     }
 
+    public async Task<List<ApartmentListItemDTO>> GetAllApartmentsAsync()
+    {
+        var apartList = new List<ApartmentListItemDTO>();
+        var hostDbApartments = await _apartmentRepository.GetAllApartmentsAsync();
+        
+        foreach (var apartmentDb in hostDbApartments)
+        {
+            apartList.Add(new ApartmentListItemDTO
+            {
+                Id = apartmentDb.Id,
+                HostId = apartmentDb.HostId,
+                Name = apartmentDb.Name,
+                Type = apartmentDb.Type,
+                PricePerNight = apartmentDb.PricePerNight,
+                Rating = apartmentDb.Rating,
+            });
+        }
+        return apartList;
+    }
+
     public Task SaveApartmentsAsync()
     {
         return _apartmentRepository.SaveApartmentsAsync();
