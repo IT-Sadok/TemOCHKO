@@ -8,6 +8,7 @@ public enum MenuList
     HostAdd, 
     HostUpdate,
     SaveChanges,
+    RaceCondition,
     End, 
     Exit = 100
 }

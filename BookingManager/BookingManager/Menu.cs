@@ -48,6 +48,10 @@ public class Menu
                 _appState = MenuList.SaveChanges;
                 await SaveChangesAsync();
                 break;
+            case "race condition":
+                _appState = MenuList.RaceCondition;
+                await ShowcaseMultiThreadExample();
+                break;
             default:
                 switch (_appState)
                 {
@@ -77,6 +81,7 @@ public class Menu
         Console.WriteLine("Type \"Remove Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Add Host\" to open the menu for removing the host");
         Console.WriteLine("Type \"Save Changes\" to save changes into the file");
+        Console.WriteLine("Type \"Race condition\" to see and emulation of multithread race condition");
         Console.WriteLine("Type \"Exit\" to exit the program");
     }
 
@@ -354,5 +359,56 @@ public class Menu
             Type = type,
             DateOfBirth = dateOfBirth
         };
+    }
+
+    private async Task ShowcaseMultiThreadExample()
+    {
+        var startingApartmentPrice = 67;
+        Console.WriteLine($"\nCreating a new apartment with a price of {startingApartmentPrice}");
+        var apartment = new ApartmentListItemDTO
+        {
+            Id = -1,
+            HostId = -1,
+            Name = "New Apartment",
+            Type = ApartmentType.EntireApartment,
+            PricePerNight = startingApartmentPrice,
+            Rating = 4.3
+        };
+        
+        object lockObject = new object();
+        int iterationCount = 10;
+        
+        for (int i = 0; i < iterationCount; i++)
+        {
+            Console.WriteLine($"Iteration {i+1}");
+            Console.WriteLine($"Apartment Price at the start: {apartment.PricePerNight}");
+            Task hostTask1 = Task.Run(() =>
+            {
+                //lock (lockObject)
+                //{
+                    var currentPrice = apartment.PricePerNight;
+                    apartment.PricePerNight = currentPrice + 10;
+                    Console.WriteLine("Host 1 added 10 to the price, now price is " + apartment.PricePerNight);
+                //}
+            });
+
+            Task hostTask2 = Task.Run((() =>
+            {
+                //lock (lockObject)
+                //{
+                    var currentPrice = apartment.PricePerNight;
+                    apartment.PricePerNight = currentPrice - 5;
+                    Console.WriteLine("Host 2 subtracted 5 from the price, now price is " + apartment.PricePerNight);
+                //}
+            }));
+            
+            await Task.WhenAll(hostTask1, hostTask2);
+            Console.WriteLine($"Price of apartments at the end - {apartment.PricePerNight}");
+            apartment.PricePerNight = startingApartmentPrice;
+            Console.WriteLine();
+            Thread.Sleep(100);
+        }
+
+        _appState = MenuList.Default;
     }
 }
