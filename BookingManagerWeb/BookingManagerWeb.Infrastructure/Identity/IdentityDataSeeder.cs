@@ -1,3 +1,4 @@
+using BookingManagerWeb.Domain.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,19 +13,19 @@ public static class IdentityDataSeeder
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var logger =  scope.ServiceProvider
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger(typeof(UserManager<IdentityUser>));
+            .CreateLogger(nameof(IdentityDataSeeder));
 
-        foreach (var role in roleManager.Roles)
+        foreach (var role in Roles.All)
         {
-            if (await roleManager.RoleExistsAsync(role.Name))
+            if (await roleManager.RoleExistsAsync(role))
             {
                 continue;
             }
             
-            var result = await roleManager.CreateAsync(new IdentityRole(role.Name));
+            var result = await roleManager.CreateAsync(new IdentityRole(role));
             if (!result.Succeeded)
             {
-                logger.LogError($"Failed to create role {role.Name}");
+                logger.LogError($"Failed to create role {role}");
             }
         }
     }
