@@ -1,6 +1,6 @@
 namespace BookingManagerWeb.Application.Auth.DTOs;
 
-public class RegisterResponseDto
+public sealed record RegisterResponseDto
 {
-    
+    public string Id { get; init; }
 }

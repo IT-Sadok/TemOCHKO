@@ -1,4 +1,5 @@
 using BookingManagerWeb.Application;
+using BookingManagerWeb.Endpoints;
 using BookingManagerWeb.Infrastructure;
 using BookingManagerWeb.Infrastructure.Identity;
 using Scalar.AspNetCore;
@@ -17,6 +18,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.MapAuthorization();
 
 app.UseHttpsRedirection();
 
