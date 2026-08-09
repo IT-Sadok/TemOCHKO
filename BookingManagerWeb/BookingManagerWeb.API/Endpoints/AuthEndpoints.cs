@@ -37,7 +37,7 @@ public static class AuthEndpoints
 
         try
         {
-            var authServiceResponse = await authService.Register(model, cancellationToken);
+            var authServiceResponse = await authService.RegisterAsync(model, cancellationToken);
             return TypedResults.Created($"/auth/register/{authServiceResponse.Id}", authServiceResponse);
         }
         catch (AuthException exception)
