@@ -1,4 +1,7 @@
 ﻿using System.Reflection.Metadata;
+using BookingManagerWeb.Application.Auth;
+using BookingManagerWeb.Application.Auth.DTOs;
+using BookingManagerWeb.Application.Auth.Validators;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
@@ -16,6 +19,9 @@ public static class DependencyInjection
         config.Scan(typeof(AssemblyReference).Assembly);
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
+        
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IValidator<RegisterRequestDto>, RegisterRequestDtoValidator>();
         
         return services;
     }

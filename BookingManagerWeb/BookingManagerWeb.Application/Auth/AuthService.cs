@@ -39,9 +39,4 @@ public class AuthService(
 
         return (user, registerRequestDto.Role).Adapt<RegisterResponseDto>();
     }
-
-    public Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto, CancellationToken ct)
-    {
-        throw new NotImplementedException();
-    }
 }

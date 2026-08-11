@@ -19,7 +19,7 @@ public static class AuthEndpoints
         group.MapPost("/register", MapRegisterAsync)
             .WithName("Register")
             .Produces<RegisterResponseDto>(StatusCodes.Status201Created)
-            .ProducesValidationProblem<>()
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest);
     }
 
@@ -34,20 +34,8 @@ public static class AuthEndpoints
         {
             return TypedResults.ValidationProblem(validationResult.ToDictionary());
         }
-
-        try
-        {
-            var authServiceResponse = await authService.RegisterAsync(model, cancellationToken);
-            return TypedResults.Created($"/auth/register/{authServiceResponse.Id}", authServiceResponse);
-        }
-        catch (AuthException exception)
-        {
-            return TypedResults.BadRequest(new ProblemDetails
-            {
-                Title = "User Registration failed",
-                Detail = exception.Message,
-                Extensions = exception.Errors
-            });
-        }
+        
+        var authServiceResponse = await authService.RegisterAsync(model, cancellationToken);
+        return TypedResults.Created($"/auth/register/{authServiceResponse.Id}", authServiceResponse);
     }
 }
