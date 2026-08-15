@@ -1,4 +1,5 @@
 using BookingManagerWeb.Infrastructure.Identity;
+using BookingManagerWeb.Infrastructure.Identity.Wrappers;
 using BookingManagerWeb.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options => 
             options.UseNpgsql(connectionString));
 
-        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        services.AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = true;
@@ -28,8 +29,12 @@ public static class DependencyInjection
                 options.Password.RequireUppercase = true;
                 options.User.RequireUniqueEmail = true;
             })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+        
+        services.AddScoped<IUserManagerWrapper,  UserManagerWrapper>();
+        services.AddScoped<IRoleManagerWrapper,  RoleManagerWrapper>();
         
         return services;
     }

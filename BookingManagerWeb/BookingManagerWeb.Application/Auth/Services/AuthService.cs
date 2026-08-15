@@ -2,6 +2,7 @@ using BookingManagerWeb.Application.Auth.DTOs;
 using BookingManagerWeb.Domain.Constants;
 using BookingManagerWeb.Infrastructure.Identity;
 using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace BookingManagerWeb.Application.Auth;
@@ -9,7 +10,9 @@ namespace BookingManagerWeb.Application.Auth;
 // TODO use wrappers instead of direct implementations
 public class AuthService(
     UserManager<ApplicationUser> userManager, 
-    RoleManager<IdentityRole> roleManager) : IAuthService
+    RoleManager<IdentityRole> roleManager, 
+    IMapper mapper,
+    IJwtService jwtService) : IAuthService
 {
     public async Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto registerRequestDto, CancellationToken ct) 
     {
@@ -23,7 +26,8 @@ public class AuthService(
             throw new AuthException("Role does not exist");
         }
         
-        var user = registerRequestDto.Adapt<ApplicationUser>();
+        //var user = registerRequestDto.Adapt<ApplicationUser>();
+        var user = mapper.Map<ApplicationUser>(registerRequestDto);
 
         var result = await userManager.CreateAsync(user, registerRequestDto.Password);
         if (!result.Succeeded)
@@ -36,7 +40,13 @@ public class AuthService(
         {
             throw new AuthException("Role creation failed");       
         }
+        
+        var token = jwtService.GenerateToken(user);
 
-        return (user, registerRequestDto.Role).Adapt<RegisterResponseDto>();
+        return new RegisterResponseDto
+        {
+            Id =  user.Id,
+            AccessToken = token
+        };
     }
 }
