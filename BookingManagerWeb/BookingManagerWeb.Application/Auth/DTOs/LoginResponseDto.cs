@@ -1,6 +1,6 @@
 namespace BookingManagerWeb.Application.Auth.DTOs;
 
-public class LoginResponseDto
+public sealed record LoginResponseDto
 {
-    
+    public string Token { get; init; }
 }

@@ -13,6 +13,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddOpenApi();
 
 builder.Services.AddExceptionHandlers();
+builder.Services.AddJwtConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
@@ -35,5 +36,10 @@ app.MapGet("/yo", () =>
 {
     throw new InvalidCastException("Something went wrong");
 });
+
+app.MapGet("/me", () => Results.Ok("Hello World!")).RequireAuthorization();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();

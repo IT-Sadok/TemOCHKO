@@ -6,10 +6,9 @@ namespace BookingManagerWeb.Application.Auth.Validators;
 
 public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
 {
-    
-    public static readonly List<string> DefinedRoles = [ Roles.Client, Roles.User, Roles.Host ];
+    private static readonly List<string> DefinedRoles = [ Roles.Client, Roles.User, Roles.Host ];
 
-    public  RegisterRequestDtoValidator()
+    public RegisterRequestDtoValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()

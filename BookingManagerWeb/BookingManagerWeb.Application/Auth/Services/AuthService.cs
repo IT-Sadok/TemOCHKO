@@ -1,16 +1,16 @@
 using BookingManagerWeb.Application.Auth.DTOs;
 using BookingManagerWeb.Domain.Constants;
 using BookingManagerWeb.Infrastructure.Identity;
-using Mapster;
+using BookingManagerWeb.Infrastructure.Identity.Wrappers;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 
-namespace BookingManagerWeb.Application.Auth;
+namespace BookingManagerWeb.Application.Auth.Services;
 
 // TODO use wrappers instead of direct implementations
 public class AuthService(
-    UserManager<ApplicationUser> userManager, 
-    RoleManager<IdentityRole> roleManager, 
+    IUserManagerWrapper userManager, 
+    IRoleManagerWrapper roleManager, 
     IMapper mapper,
     IJwtService jwtService) : IAuthService
 {
@@ -38,7 +38,7 @@ public class AuthService(
         var roleSucceeded = await userManager.AddToRoleAsync(user, registerRequestDto.Role);
         if (!roleSucceeded.Succeeded)
         {
-            throw new AuthException("Role creation failed");       
+            throw new AuthException("Role is unacceptable");       
         }
         
         var token = jwtService.GenerateToken(user);
@@ -47,6 +47,26 @@ public class AuthService(
         {
             Id =  user.Id,
             AccessToken = token
+        };
+    }
+
+    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto, CancellationToken ct)
+    {
+        var user = await userManager.FindByEmailAsync(loginRequestDto.Email, ct);
+        if (user is null)
+        {
+            throw new AuthException("User not found");
+        }
+        var passwordCheckResult = await userManager.CheckPasswordAsync(user, loginRequestDto.Password, ct);
+        if (!passwordCheckResult)
+        {
+            throw new AuthException("Password is invalid");
+        }
+        
+        var token = jwtService.GenerateToken(user);
+        return new LoginResponseDto()
+        {
+            Token = token
         };
     }
 }

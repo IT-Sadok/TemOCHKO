@@ -1,11 +1,7 @@
-using BookingManagerWeb.Application.Auth;
 using BookingManagerWeb.Application.Auth.DTOs;
-using BookingManagerWeb.Infrastructure.Identity;
+using BookingManagerWeb.Application.Auth.Services;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingManagerWeb.Endpoints;
@@ -19,6 +15,12 @@ public static class AuthEndpoints
         group.MapPost("/register", MapRegisterAsync)
             .WithName("Register")
             .Produces<RegisterResponseDto>(StatusCodes.Status201Created)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+        
+        group.MapPost("/login", MapLoginAsync)
+            .WithName("Login")
+            .Produces<LoginResponseDto>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest);
     }
@@ -37,5 +39,21 @@ public static class AuthEndpoints
         
         var authServiceResponse = await authService.RegisterAsync(model, cancellationToken);
         return TypedResults.Created($"/auth/register/{authServiceResponse.Id}", authServiceResponse);
+    }
+
+    private static async Task<Results<Ok<LoginResponseDto>, ValidationProblem, BadRequest<ProblemDetails>>> MapLoginAsync(
+            LoginRequestDto model,
+            IAuthService authService,
+            IValidator<LoginRequestDto> validator,
+            CancellationToken cancellationToken)
+    {
+        var validationResult = await validator.ValidateAsync(model, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
+        }
+
+        var authLoginResponse = await authService.LoginAsync(model, cancellationToken);
+        return TypedResults.Ok(authLoginResponse);
     }
 }
