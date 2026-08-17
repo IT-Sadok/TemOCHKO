@@ -32,11 +32,6 @@ app.UseHttpsRedirection();
 
 await IdentityDataSeeder.SeedAsync(app.Services);
 
-app.MapGet("/yo", () =>
-{
-    throw new InvalidCastException("Something went wrong");
-});
-
 app.MapGet("/me", () => Results.Ok("Hello World!")).RequireAuthorization();
 
 app.UseAuthentication();

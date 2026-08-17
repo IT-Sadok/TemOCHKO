@@ -4,6 +4,7 @@ using BookingManagerWeb.Application.Auth.DTOs;
 using BookingManagerWeb.Application.Auth.Mapping;
 using BookingManagerWeb.Application.Auth.Services;
 using BookingManagerWeb.Application.Auth.Validators;
+using BookingManagerWeb.Infrastructure.Auth;
 using BookingManagerWeb.Infrastructure.Identity;
 using FluentValidation;
 using Mapster;
@@ -16,14 +17,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        // services.AddValidatorsFromAssemblyContaining<AssemblyReference>();
         services.AddValidatorsFromAssemblyContaining<RegisterAuthMapping>();
 
         var config = TypeAdapterConfig.GlobalSettings;
-        
         config.Scan(typeof(RegisterAuthMapping).Assembly);
         
-        //config.Scan(typeof(AssemblyReference).Assembly);
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
         

@@ -1,13 +1,12 @@
 using System.Security.Claims;
 using System.Text;
-using BookingManagerWeb.Application.Auth.Options;
+using BookingManagerWeb.Infrastructure.Auth.Options;
 using BookingManagerWeb.Infrastructure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
-namespace BookingManagerWeb.Application.Auth.Services;
+namespace BookingManagerWeb.Infrastructure.Auth;
 
 public class JwtService(IOptions<JwtOptions> options) : IJwtService
 {

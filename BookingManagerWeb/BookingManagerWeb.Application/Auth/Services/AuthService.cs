@@ -1,5 +1,6 @@
 using BookingManagerWeb.Application.Auth.DTOs;
 using BookingManagerWeb.Domain.Constants;
+using BookingManagerWeb.Infrastructure.Auth;
 using BookingManagerWeb.Infrastructure.Identity;
 using BookingManagerWeb.Infrastructure.Identity.Wrappers;
 using MapsterMapper;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BookingManagerWeb.Application.Auth.Services;
 
-// TODO use wrappers instead of direct implementations
 public class AuthService(
     IUserManagerWrapper userManager, 
     IRoleManagerWrapper roleManager, 
@@ -26,7 +26,6 @@ public class AuthService(
             throw new AuthException("Role does not exist");
         }
         
-        //var user = registerRequestDto.Adapt<ApplicationUser>();
         var user = mapper.Map<ApplicationUser>(registerRequestDto);
 
         var result = await userManager.CreateAsync(user, registerRequestDto.Password);

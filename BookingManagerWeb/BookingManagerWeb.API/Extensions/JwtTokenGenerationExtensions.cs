@@ -1,5 +1,5 @@
 using System.Text;
-using BookingManagerWeb.Application.Auth.Options;
+using BookingManagerWeb.Infrastructure.Auth.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

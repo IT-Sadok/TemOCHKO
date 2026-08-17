@@ -1,4 +1,4 @@
-namespace BookingManagerWeb.Application.Auth.Options;
+namespace BookingManagerWeb.Infrastructure.Auth.Options;
 
 public class JwtOptions
 {

@@ -15,7 +15,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             entity.Property(user => user.FirstName).HasMaxLength(100).IsRequired();
             entity.Property(user => user.LastName).HasMaxLength(100).IsRequired();
             entity.Property(user => user.CreatedAt).IsRequired();
-
         });
     }
     
