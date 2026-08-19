@@ -1,11 +1,6 @@
-﻿using System.Reflection.Metadata;
-using BookingManagerWeb.Application.Auth;
-using BookingManagerWeb.Application.Auth.DTOs;
-using BookingManagerWeb.Application.Auth.Mapping;
+﻿using BookingManagerWeb.Application.Auth.Mapping;
 using BookingManagerWeb.Application.Auth.Services;
-using BookingManagerWeb.Application.Auth.Validators;
 using BookingManagerWeb.Infrastructure.Auth;
-using BookingManagerWeb.Infrastructure.Identity;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
@@ -18,7 +13,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<RegisterAuthMapping>();
-
+        
         var config = TypeAdapterConfig.GlobalSettings;
         config.Scan(typeof(RegisterAuthMapping).Assembly);
         
@@ -27,8 +22,6 @@ public static class DependencyInjection
         
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJwtService, JwtService>();
-        services.AddScoped<IValidator<RegisterRequestDto>, RegisterRequestDtoValidator>();
-        services.AddScoped<IValidator<LoginRequestDto>, LoginRequestDtoValidator>();        
         return services;
     }
 }

@@ -4,12 +4,14 @@ using BookingManagerWeb.Endpoints;
 using BookingManagerWeb.Extensions;
 using BookingManagerWeb.Infrastructure;
 using BookingManagerWeb.Infrastructure.Identity;
+using BookingManagerWeb.Middleware;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
 builder.Services.AddExceptionHandlers();
@@ -26,7 +28,10 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.MapAuthorization();
+var api = app.MapGroup("")
+    .AddEndpointFilter<ValidationMiddleware>();
+
+api.MapAuthorization();
 
 app.UseHttpsRedirection();
 

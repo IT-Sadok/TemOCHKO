@@ -28,12 +28,5 @@ public static class JwtTokenGenerationExtensions
                     ClockSkew = TimeSpan.Zero
                 };
             });
-        
-        /*options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;  
-            })*/
     }
 }

@@ -28,14 +28,8 @@ public static class AuthEndpoints
     private static async Task<Results<Created<RegisterResponseDto>, ValidationProblem, BadRequest<ProblemDetails>>> MapRegisterAsync(
         RegisterRequestDto model,
         IAuthService authService, 
-        IValidator<RegisterRequestDto> validator,
         CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(model);
-        if (!validationResult.IsValid)
-        {
-            return TypedResults.ValidationProblem(validationResult.ToDictionary());
-        }
         
         var authServiceResponse = await authService.RegisterAsync(model, cancellationToken);
         return TypedResults.Created($"/auth/register/{authServiceResponse.Id}", authServiceResponse);
@@ -44,15 +38,8 @@ public static class AuthEndpoints
     private static async Task<Results<Ok<LoginResponseDto>, ValidationProblem, BadRequest<ProblemDetails>>> MapLoginAsync(
             LoginRequestDto model,
             IAuthService authService,
-            IValidator<LoginRequestDto> validator,
             CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(model, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return TypedResults.ValidationProblem(validationResult.ToDictionary());
-        }
-
         var authLoginResponse = await authService.LoginAsync(model, cancellationToken);
         return TypedResults.Ok(authLoginResponse);
     }
