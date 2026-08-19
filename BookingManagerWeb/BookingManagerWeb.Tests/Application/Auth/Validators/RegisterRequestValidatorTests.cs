@@ -34,6 +34,23 @@ public class RegisterRequestValidatorTests
         var result = _registerRequestDtoValidator.Validate(registerRequestDto);
         Assert.False(result.IsValid);
     }
+    
+
+    [Fact]
+    public void ShouldHaveErrors_WhenPasswordDoesNotIncludeUppercaseCharacters()
+    {
+        var registerRequestDto = CreateRegisterRequestDto() with {Password = "invalidpass123!"};
+        var result = _registerRequestDtoValidator.Validate(registerRequestDto);
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void ShouldHaveErrors_WhenPasswordIsTooShort()
+    {
+        var registerRequestDto = CreateRegisterRequestDto() with {Password = "Hi123"};
+        var result = _registerRequestDtoValidator.Validate(registerRequestDto);
+        Assert.False(result.IsValid);
+    }
 
     [Fact]
     public void ShouldHaveErrors_WhenPasswordIsNull()
@@ -47,6 +64,22 @@ public class RegisterRequestValidatorTests
     public void ShouldHaveErrors_WhenRoleIsUndefined()
     {
         var registerRequestDto = CreateRegisterRequestDto() with {Role = "RandomRole"};
+        var result = _registerRequestDtoValidator.Validate(registerRequestDto);
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void ShouldHaveErrors_WhenFirstNameIsEmpty()
+    {
+        var registerRequestDto = CreateRegisterRequestDto() with {FirstName = string.Empty};
+        var result = _registerRequestDtoValidator.Validate(registerRequestDto);
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void ShouldHaveErrors_WhenLastNameIsEmpty()
+    {
+        var registerRequestDto = CreateRegisterRequestDto() with { LastName = string.Empty };
         var result = _registerRequestDtoValidator.Validate(registerRequestDto);
         Assert.False(result.IsValid);
     }

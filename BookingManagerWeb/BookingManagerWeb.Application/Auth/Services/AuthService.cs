@@ -37,7 +37,7 @@ public class AuthService(
         var roleSucceeded = await userManager.AddToRoleAsync(user, registerRequestDto.Role);
         if (!roleSucceeded.Succeeded)
         {
-            throw new AuthException("Role is unacceptable");       
+            throw new AuthException("Role assignment failed");       
         }
         
         var token = jwtService.GenerateToken(user);

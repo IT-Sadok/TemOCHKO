@@ -11,8 +11,5 @@ public class RegisterAuthMapping : IRegister
         config.NewConfig<RegisterRequestDto, ApplicationUser>()
             .Map(dest => dest.UserName, src => src.Email)
             .Map(dest => dest.CreatedAt, _ => DateTime.UtcNow);
-
-        /*config.NewConfig<ApplicationUser, RegisterResponseDto>()
-            .Map(dest => dest.Id, src => src.Id);*/
     }
 }

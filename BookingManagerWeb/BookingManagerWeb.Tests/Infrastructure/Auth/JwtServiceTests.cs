@@ -11,7 +11,7 @@ public class JwtServiceTests
 {
     private readonly JwtOptions _jwtOptions = new()
     {
-        SecretKey = "this-is-a-super-secret-dummy-key-for-testing-purposes-only!", 
+        SecretKey = "this-is-a-super-secret-dummy-key-that-is-not-a-real-key-so-dont-bother", 
         Audience = "test-audience",
         Issuer = "test-issuer",
         ExpiresInMinutes = 30

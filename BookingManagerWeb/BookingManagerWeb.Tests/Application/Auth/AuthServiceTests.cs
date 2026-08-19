@@ -25,7 +25,7 @@ public class AuthServiceTests
     {
         var config = TypeAdapterConfig.GlobalSettings;
         new RegisterAuthMapping().Register(config);
-    
+
         var mapper = new Mapper(config);
 
         _systemUnderTest = new AuthService(
@@ -36,18 +36,83 @@ public class AuthServiceTests
         );
 
     }
-    
+
     [Fact]
     public async Task RegisterAsync_WhenRoleIsInvalid_ThrowsAuthException()
     {
         var request = new RegisterRequestDto { Role = "SomeRole" };
-        var exception = await Should.ThrowAsync<AuthException>(() => 
+        var exception = await Should.ThrowAsync<AuthException>(() =>
             _systemUnderTest.RegisterAsync(request, CancellationToken.None));
 
         exception.ShouldNotBeNull();
-        exception.Message.ShouldBe("Invalid role");
+        exception.Message.ShouldBe("User must have a client or host role");
     }
-    
+
+    [Fact]
+    public async Task RegisterAsync_WhenRoleDoesNotExist_ThrowsAuthException()
+    {
+        var request = new RegisterRequestDto() { Role = "Client" };
+
+        _roleManagerMock.Setup(x => x.RoleExistsAsync(request.Role, CancellationToken.None)).ReturnsAsync(false);
+
+        var exception = await Should.ThrowAsync<AuthException>(() =>
+            _systemUnderTest.RegisterAsync(request, CancellationToken.None));
+
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe("Role does not exist");
+    }
+
+    [Fact]
+    public async Task RegisterAsync_WhenUserCreationFailed_ThrowsAuthException()
+    {
+        var request = new RegisterRequestDto() {Role = "Host", Password = "ValidPass123!"};
+        
+        _roleManagerMock.Setup(x => x.RoleExistsAsync(request.Role, CancellationToken.None)).ReturnsAsync(true);
+        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), 
+            request.Password, It.IsAny<CancellationToken>())).ReturnsAsync(IdentityResult.Failed());
+        
+        var exception = await Should.ThrowAsync<AuthException>(() =>
+            _systemUnderTest.RegisterAsync(request, CancellationToken.None));
+        
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe("User creation failed");
+    }
+
+    [Fact]
+    public async Task RegisterAsync_WhenRoleAssignmentFailed_ThrowsAuthException()
+    {
+        var request = new RegisterRequestDto() {Role = "Client", Password = "ValidPass123!"};
+        
+        _roleManagerMock.Setup(x => x.RoleExistsAsync(request.Role, CancellationToken.None)).ReturnsAsync(true);
+        _userManagerMock
+            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), request.Password, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityResult.Success);
+        _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), request.Role, It.IsAny<CancellationToken>())).ReturnsAsync(IdentityResult.Failed());
+        
+        var exception = await Should.ThrowAsync<AuthException>(() => _systemUnderTest.RegisterAsync(request, CancellationToken.None));
+        
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe("Role assignment failed");
+    }
+
+    [Fact]
+    public async Task RegisterAsync_WhenSuccess_ReturnsRegisterResponseDto()
+    {
+        var request = new RegisterRequestDto() {Role = "Client", Password = "ValidPass123!"};
+        
+        _roleManagerMock.Setup(x =>  x.RoleExistsAsync(request.Role, CancellationToken.None)).ReturnsAsync(true);
+        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), request.Password, It.IsAny<CancellationToken>() )).ReturnsAsync(IdentityResult.Success);
+        _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), request.Role, It.IsAny<CancellationToken>())).ReturnsAsync(IdentityResult.Success);
+        
+        var jwtToken = "some-jwt-token";
+        _jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<ApplicationUser>())).Returns(jwtToken);
+        
+        var result = await _systemUnderTest.RegisterAsync(request, CancellationToken.None);
+        
+        result.ShouldNotBeNull();
+        result.AccessToken.ShouldBe(jwtToken);
+    }
+
     [Fact]
     public async Task LoginAsync_WhenUserNotFound_ThrowsAuthException()
     {
@@ -70,7 +135,6 @@ public class AuthServiceTests
         
         _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
-            
         _userManagerMock.Setup(x => x.CheckPasswordAsync(user, request.Password, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false); 
 
@@ -89,10 +153,8 @@ public class AuthServiceTests
         
         _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
-            
         _userManagerMock.Setup(x => x.CheckPasswordAsync(user, request.Password, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-            
         _jwtServiceMock.Setup(x => x.GenerateToken(user))
             .Returns(expectedToken);
 
