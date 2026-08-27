@@ -28,10 +28,10 @@ public class AuthService(
         
         var user = mapper.Map<ApplicationUser>(registerRequestDto);
 
-        var result = await userManager.CreateAsync(user, registerRequestDto.Password);
+        var result = await userManager.CreateAsync(user, registerRequestDto.Password, ct);
         if (!result.Succeeded)
         {
-            throw new  AuthException("User creation failed");
+            throw new AuthException("User creation failed");
         }
         
         var roleSucceeded = await userManager.AddToRoleAsync(user, registerRequestDto.Role);

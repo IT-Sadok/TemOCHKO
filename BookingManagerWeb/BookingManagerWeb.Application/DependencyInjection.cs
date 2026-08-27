@@ -1,5 +1,6 @@
 ﻿using BookingManagerWeb.Application.Auth.Mapping;
 using BookingManagerWeb.Application.Auth.Services;
+using BookingManagerWeb.Application.Business.Services;
 using BookingManagerWeb.Infrastructure.Auth;
 using FluentValidation;
 using Mapster;
@@ -22,6 +23,8 @@ public static class DependencyInjection
         
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IApartmentService, ApartmentService>();
+        services.AddScoped<IBookingService, BookingService>();
         return services;
     }
 }

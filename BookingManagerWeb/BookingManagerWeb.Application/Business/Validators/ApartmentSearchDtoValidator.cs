@@ -9,7 +9,7 @@ public class ApartmentSearchDtoValidator : AbstractValidator<ApartmentSearchDto>
     {
         RuleFor(x => x.CheckIn)
             //.NotEmpty().WithMessage("Check-in required")
-            .GreaterThan(DateTime.UtcNow).When(x => x.CheckIn.HasValue && x.CheckOut.HasValue)
+            .GreaterThan(DateOnly.FromDateTime(DateTime.Today)).When(x => x.CheckIn.HasValue && x.CheckOut.HasValue)
             .WithMessage("Check-in must be in the future")
             .LessThan(dto => dto.CheckOut).When(x => x.CheckIn.HasValue && x.CheckOut.HasValue)
             .WithMessage("Check in must be before check out time");

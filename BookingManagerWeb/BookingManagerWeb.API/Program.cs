@@ -1,9 +1,9 @@
 using BookingManagerWeb.Application;
-using BookingManagerWeb.Application.Auth;
 using BookingManagerWeb.Endpoints;
 using BookingManagerWeb.Extensions;
 using BookingManagerWeb.Infrastructure;
 using BookingManagerWeb.Infrastructure.Identity;
+using BookingManagerWeb.Infrastructure.Persistence;
 using BookingManagerWeb.Middleware;
 using Scalar.AspNetCore;
 
@@ -32,10 +32,13 @@ var api = app.MapGroup("")
     .AddEndpointFilter<ValidationMiddleware>();
 
 api.MapAuthorization();
+api.MapApartmentEndpoints();
+api.MapBookingsEndpoint();
 
 app.UseHttpsRedirection();
 
 await IdentityDataSeeder.SeedAsync(app.Services);
+await DatabaseSeeder.SeedDatabase(app.Services);
 
 app.MapGet("/me", () => Results.Ok("Hello World!")).RequireAuthorization();
 

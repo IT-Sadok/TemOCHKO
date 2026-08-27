@@ -1,4 +1,3 @@
-using BookingManagerWeb.Application.Auth.DTOs;
 using BookingManagerWeb.Application.Business.DTO_s;
 using BookingManagerWeb.Application.Business.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,7 +20,7 @@ public static class ApartmentEndpoints
     }
 
     private static async Task<Results<Ok<ApartmentsResponseDto>, ValidationProblem, NotFound<ProblemDetails>>>
-        MapGetApartmentsAsync([FromQuery] ApartmentSearchDto searchDto, 
+        MapGetApartmentsAsync([AsParameters] ApartmentSearchDto searchDto, 
             IApartmentService apartmentService, 
             CancellationToken cancellationToken)
     {

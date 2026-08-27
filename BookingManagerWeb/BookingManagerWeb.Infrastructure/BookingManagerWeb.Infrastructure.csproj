@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="A2v10.Identity.Jwt" Version="10.1.8647" />
+      <PackageReference Include="Bogus" Version="35.6.5" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.11" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.10" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1">
