@@ -1,4 +1,5 @@
 using BookingManagerWeb.Application.Auth;
+using BookingManagerWeb.Application.Business;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,18 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             problemDetails.Status = StatusCodes.Status400BadRequest;
             problemDetails.Title = "Authentication error";
             problemDetails.Detail = authException.Message;
+        }
+        else if (exception is ApartmentOccupiedException apartmentOccupiedException)
+        {
+            problemDetails.Status = StatusCodes.Status400BadRequest;
+            problemDetails.Title = "Apartment already occupied for these dates";
+            problemDetails.Detail = apartmentOccupiedException.Message;
+        }
+        else if (exception is ApartmentNotFoundException apartmentNotFoundException)
+        {
+            problemDetails.Status = StatusCodes.Status404NotFound;
+            problemDetails.Title = "Apartment not found";
+            problemDetails.Detail = apartmentNotFoundException.Message;
         }
         else
         {
