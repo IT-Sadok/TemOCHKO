@@ -2,7 +2,7 @@ using BookingManagerWeb.Domain.Constants;
 
 namespace BookingManagerWeb.Application.Business.DTO_s;
 
-public class BookingsResponseDto
+public class BookingsCreateResponseDto
 {
     public Guid Id { get; set; }
     public Guid ApartmentId { get; set; }

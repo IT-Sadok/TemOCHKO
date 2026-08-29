@@ -5,5 +5,6 @@ namespace BookingManagerWeb.Application.Business.Services;
 
 public interface IBookingService
 {
-    Task<BookingsResponseDto> MakeBookingAsync(BookingCreateDto createDto, Claim subClaim, CancellationToken cancellationToken);
+    Task<BookingsCreateResponseDto> MakeBookingAsync(BookingCreateDto createDto, Claim subClaim, CancellationToken cancellationToken);
+    Task<BookingsFetchResponseDto> FetchBookingsAsync(Claim subClaim, CancellationToken cancellationToken);
 }

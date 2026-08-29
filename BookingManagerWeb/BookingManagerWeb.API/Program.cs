@@ -40,8 +40,6 @@ app.UseHttpsRedirection();
 await IdentityDataSeeder.SeedAsync(app.Services);
 await DatabaseSeeder.SeedDatabase(app.Services);
 
-app.MapGet("/me", () => Results.Ok("Hello World!")).RequireAuthorization();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
