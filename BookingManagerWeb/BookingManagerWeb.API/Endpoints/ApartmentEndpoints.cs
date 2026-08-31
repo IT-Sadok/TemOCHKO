@@ -20,7 +20,7 @@ public static class ApartmentEndpoints
     }
 
     private static async Task<Results<Ok<ApartmentsResponseDto>, ValidationProblem, NotFound<ProblemDetails>>>
-        MapGetApartmentsAsync([AsParameters] ApartmentSearchDto searchDto, 
+        GetApartmentsAsync([AsParameters] ApartmentSearchDto searchDto, 
             IApartmentService apartmentService, 
             CancellationToken cancellationToken)
     {
