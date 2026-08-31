@@ -13,8 +13,6 @@ public static class DatabaseSeeder
 
         if (dbContext.Apartments.Any())
         {
-            //dbContext.Apartments.RemoveRange(dbContext.Apartments);
-            //await dbContext.SaveChangesAsync();
             return;
         }
 

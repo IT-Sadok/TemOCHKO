@@ -1,4 +1,4 @@
-using BookingManagerWeb.Application.Business.DTO_s;
+using BookingManagerWeb.Application.Business.DTOs;
 using BookingManagerWeb.Infrastructure.Persistence;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;

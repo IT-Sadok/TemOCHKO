@@ -1,4 +1,4 @@
-using BookingManagerWeb.Application.Business.DTO_s;
+using BookingManagerWeb.Application.Business.DTOs;
 using BookingManagerWeb.Application.Business.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +9,9 @@ public static class ApartmentEndpoints
 {
     public static void MapApartmentEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api");
+        var group = app.MapGroup("/apartments");
         
-        group.MapGet("/apartments", MapGetApartmentsAsync)
+        group.MapGet("/", GetApartmentsAsync)
             .WithName("Apartments")
             .Produces<ApartmentsResponseDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()

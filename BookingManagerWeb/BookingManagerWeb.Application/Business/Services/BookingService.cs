@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using BookingManagerWeb.Application.Business.DTO_s;
+using BookingManagerWeb.Application.Business.DTOs;
 using BookingManagerWeb.Domain.Constants;
 using BookingManagerWeb.Domain.Models;
 using BookingManagerWeb.Infrastructure.Persistence;
@@ -10,20 +10,20 @@ namespace BookingManagerWeb.Application.Business.Services;
 
 public class BookingService(ApplicationDbContext dbContext, IMapper mapper) : IBookingService
 {
-    public async Task<BookingsCreateResponseDto> MakeBookingAsync(BookingCreateDto createDto, Claim subclaim, CancellationToken cancellationToken)
+    public async Task<BookingsCreateResponseDto> MakeBookingAsync(BookingCreateDto createDto, Claim userIdClaim, CancellationToken cancellationToken)
     {
-        if (subclaim is null)
+        if (userIdClaim is null)
         {
-            throw new ArgumentNullException(nameof(subclaim));
+            throw new ArgumentNullException(nameof(userIdClaim));
         }
 
-        var apartment = await dbContext.Apartments.Include(apartment => apartment.Bookings).FirstOrDefaultAsync(x => x.Id == createDto.ApartmentId, cancellationToken: cancellationToken);
+        var apartment = await dbContext.Apartments.FirstOrDefaultAsync(x => x.Id == createDto.ApartmentId, cancellationToken: cancellationToken);
         if (apartment is null)
         {
             throw new ApartmentNotFoundException(nameof(apartment));
         }
-
-        if (apartment.Bookings.Any(b => b.From < createDto.EndDate && b.To > createDto.StartDate))
+        
+        if (dbContext.Bookings.Any(b => b.ApartmentId == apartment.Id && (b.From < createDto.EndDate && b.To > createDto.StartDate)))
         {
             throw new ApartmentOccupiedException(nameof(apartment));   
         }
@@ -33,7 +33,7 @@ public class BookingService(ApplicationDbContext dbContext, IMapper mapper) : IB
         var booking = new Booking()
         {
             ApartmentId = apartment.Id,
-            UserId = subclaim.Value,
+            UserId = userIdClaim.Value,
             From = createDto.StartDate,
             To = createDto.EndDate,
             TotalPrice = totalPrice,
@@ -48,14 +48,14 @@ public class BookingService(ApplicationDbContext dbContext, IMapper mapper) : IB
         return response;
     }
 
-    public async Task<BookingsFetchResponseDto> FetchBookingsAsync(Claim subClaim, CancellationToken cancellationToken)
+    public async Task<BookingsFetchResponseDto> FetchBookingsAsync(Claim userIdClaim, CancellationToken cancellationToken)
     {
-        if (subClaim is null)
+        if (userIdClaim is null)
         {
-            throw new ArgumentNullException(nameof(subClaim));
+            throw new ArgumentNullException(nameof(userIdClaim));
         }
 
-        var userBookings = await dbContext.Bookings.Where(b => b.UserId == subClaim.Value)
+        var userBookings = await dbContext.Bookings.Where(b => b.UserId == userIdClaim.Value)
             .ToListAsync(cancellationToken: cancellationToken);
 
         return new BookingsFetchResponseDto()

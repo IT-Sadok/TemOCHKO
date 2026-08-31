@@ -1,4 +1,4 @@
-using BookingManagerWeb.Application.Business.DTO_s;
+using BookingManagerWeb.Application.Business.DTOs;
 
 namespace BookingManagerWeb.Application.Business.Services;
 

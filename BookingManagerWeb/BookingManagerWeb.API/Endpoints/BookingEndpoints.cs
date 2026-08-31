@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using BookingManagerWeb.Application.Business.DTO_s;
+using BookingManagerWeb.Application.Business.DTOs;
 using BookingManagerWeb.Application.Business.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,17 +10,17 @@ public static class BookingEndpoints
 {
     public static void MapBookingsEndpoint(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api")
+        var group = app.MapGroup("/bookings")
             .WithName("Bookings");
         
-        group.MapPost("/bookings/", PostBooking)
+        group.MapPost("/", PostBooking)
             .WithName("PostBooking")
             .Produces<BookingsCreateResponseDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization();
 
-        group.MapGet("/bookings/", GetBookings)
+        group.MapGet("/", GetBookings)
             .WithName("GetBookings")
             .Produces<BookingsFetchResponseDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -34,8 +34,8 @@ public static class BookingEndpoints
             IBookingService bookingService,
             CancellationToken cancellationToken)
     {
-        var sub = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
-        var response = await bookingService.FetchBookingsAsync(sub, cancellationToken);
+        var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+        var response = await bookingService.FetchBookingsAsync(userIdClaim, cancellationToken);
         return TypedResults.Ok(response);
     }
 
@@ -47,8 +47,8 @@ public static class BookingEndpoints
             CancellationToken cancellationToken)
 
     {
-        var sub = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
-        var response = await bookingService.MakeBookingAsync(createDto, sub, cancellationToken);
+        var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+        var response = await bookingService.MakeBookingAsync(createDto, userIdClaim, cancellationToken);
         return TypedResults.Ok(response);
     }
 }

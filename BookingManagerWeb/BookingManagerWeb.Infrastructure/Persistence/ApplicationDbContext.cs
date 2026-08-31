@@ -14,8 +14,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new ApartmentsConfiguration());
-        modelBuilder.ApplyConfiguration(new BookingsConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<ApplicationUser>(entity =>

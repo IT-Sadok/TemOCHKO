@@ -1,4 +1,4 @@
-using BookingManagerWeb.Application.Business.DTO_s;
+using BookingManagerWeb.Application.Business.DTOs;
 using FluentValidation;
 
 namespace BookingManagerWeb.Application.Business.Validators;

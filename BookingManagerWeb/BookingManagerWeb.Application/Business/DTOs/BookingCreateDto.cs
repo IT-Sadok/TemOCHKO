@@ -1,4 +1,4 @@
-namespace BookingManagerWeb.Application.Business.DTO_s;
+namespace BookingManagerWeb.Application.Business.DTOs;
 
 public sealed record BookingCreateDto
 {

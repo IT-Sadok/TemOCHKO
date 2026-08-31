@@ -1,6 +1,4 @@
-using BookingManagerWeb.Domain.Constants;
-
-namespace BookingManagerWeb.Application.Business.DTO_s;
+namespace BookingManagerWeb.Application.Business.DTOs;
 
 public class BookingsCreateResponseDto
 {
