@@ -1,8 +1,9 @@
 using BookingManagerWeb.Application.Business.DTOs;
+using BookingManagerWeb.Application.Business.DTOs.Pagination;
 
 namespace BookingManagerWeb.Application.Business.Services;
 
 public interface IApartmentService
 {
-    Task<ApartmentsResponseDto> GetApartmentsAsync(ApartmentSearchDto searchDto, CancellationToken cancellationToken);
+    Task<PagedResponse<ApartmentsFetchResponseDto>> GetApartmentsAsync(ApartmentQueryFilter filter, ApartmentSearchDto searchDto, CancellationToken cancellationToken);
 }

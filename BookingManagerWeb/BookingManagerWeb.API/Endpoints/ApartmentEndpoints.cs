@@ -1,4 +1,5 @@
 using BookingManagerWeb.Application.Business.DTOs;
+using BookingManagerWeb.Application.Business.DTOs.Pagination;
 using BookingManagerWeb.Application.Business.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -13,18 +14,19 @@ public static class ApartmentEndpoints
         
         group.MapGet("/", GetApartmentsAsync)
             .WithName("Apartments")
-            .Produces<ApartmentsResponseDto>(StatusCodes.Status200OK)
+            .Produces<ApartmentsFetchResponseDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound);
         
     }
 
-    private static async Task<Results<Ok<ApartmentsResponseDto>, ValidationProblem, NotFound<ProblemDetails>>>
-        GetApartmentsAsync([AsParameters] ApartmentSearchDto searchDto, 
+    private static async Task<Results<Ok<PagedResponse<ApartmentsFetchResponseDto>>, ValidationProblem, NotFound<ProblemDetails>>>
+        GetApartmentsAsync([AsParameters] ApartmentQueryFilter filter,
+            [AsParameters] ApartmentSearchDto searchDto, 
             IApartmentService apartmentService, 
             CancellationToken cancellationToken)
     {
-        var apartmentsSearchResult = await apartmentService.GetApartmentsAsync(searchDto, cancellationToken);
+        var apartmentsSearchResult = await apartmentService.GetApartmentsAsync(filter, searchDto, cancellationToken);
         return TypedResults.Ok(apartmentsSearchResult);
     }
     
