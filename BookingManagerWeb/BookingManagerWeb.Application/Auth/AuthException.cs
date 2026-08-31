@@ -1,16 +1,7 @@
+using BookingManagerWeb.Domain.Exceptions;
+using Microsoft.AspNetCore.Http;
+
 namespace BookingManagerWeb.Application.Auth;
 
-public class AuthException : Exception
-{
-    public IDictionary<string, object?> Errors { get; }
-
-    public AuthException(string msg) : base(msg)
-    {
-        Errors = new Dictionary<string, object?>();
-    }
-    
-    public AuthException(string msg, IDictionary<string, object?> errors) : base(msg)
-    {
-        Errors = errors;
-    }
-}
+public class AuthException(string message)
+    : AppBaseException(message, StatusCodes.Status400BadRequest, "Authentication error");
