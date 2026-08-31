@@ -8,8 +8,8 @@ public class RegisterBookingMapping : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Booking, BookingCreateDto>()
-            .Map(dest => dest.ApartmentId, src => src.Apartment!.Id)
+        config.NewConfig<Booking, BookingsCreateResponseDto>()
+            .Map(dest => dest.ApartmentId, src => src.ApartmentId)
             .Map(dest => dest.StartDate, src => src.From)
             .Map(dest => dest.EndDate, src => src.To);
     }

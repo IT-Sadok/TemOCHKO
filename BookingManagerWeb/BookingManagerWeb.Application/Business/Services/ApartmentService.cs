@@ -1,4 +1,3 @@
-using BookingManagerWeb.Application.Auth.DTOs;
 using BookingManagerWeb.Application.Business.DTO_s;
 using BookingManagerWeb.Infrastructure.Persistence;
 using MapsterMapper;

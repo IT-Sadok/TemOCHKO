@@ -9,8 +9,13 @@ public class ApartmentsConfiguration : IEntityTypeConfiguration<Apartment>
     public void Configure(EntityTypeBuilder<Apartment> builder)
     {
         builder.HasKey(a => a.Id);
+        
+        builder.Property(a => a.Id)
+            .IsRequired();
 
         builder.HasMany(a => a.Bookings)
-            .WithOne(b => b.Apartment);
+            .WithOne()
+            .HasForeignKey(a => a.ApartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

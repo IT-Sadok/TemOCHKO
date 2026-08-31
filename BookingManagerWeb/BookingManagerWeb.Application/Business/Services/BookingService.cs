@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Security.Claims;
 using BookingManagerWeb.Application.Business.DTO_s;
 using BookingManagerWeb.Domain.Constants;
@@ -24,7 +23,7 @@ public class BookingService(ApplicationDbContext dbContext, IMapper mapper) : IB
             throw new ApartmentNotFoundException(nameof(apartment));
         }
 
-        if (apartment.Bookings.Any(b => b.From <= createDto.EndDate && b.To >= createDto.StartDate))
+        if (apartment.Bookings.Any(b => b.From < createDto.EndDate && b.To > createDto.StartDate))
         {
             throw new ApartmentOccupiedException(nameof(apartment));   
         }
@@ -33,7 +32,7 @@ public class BookingService(ApplicationDbContext dbContext, IMapper mapper) : IB
 
         var booking = new Booking()
         {
-            Apartment = apartment,
+            ApartmentId = apartment.Id,
             UserId = subclaim.Value,
             From = createDto.StartDate,
             To = createDto.EndDate,

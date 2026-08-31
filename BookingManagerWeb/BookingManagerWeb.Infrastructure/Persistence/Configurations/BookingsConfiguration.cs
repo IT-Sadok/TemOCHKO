@@ -10,8 +10,13 @@ public class BookingsConfiguration : IEntityTypeConfiguration<Booking>
     {
         builder.HasKey(b => b.Id);
 
-        builder.HasOne(b => b.Apartment)
-            .WithMany(a => a.Bookings)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(b => b.Id)
+            .IsRequired();
+        
+        builder.Property(b => b.UserId)
+            .IsRequired();
+        
+        builder.Property(b => b.ApartmentId)
+            .IsRequired();
     }
 }

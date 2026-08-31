@@ -3,7 +3,7 @@ namespace BookingManagerWeb.Domain.Models;
 public class Booking
 {
     public Guid Id { get; set; }
-    public Apartment? Apartment { get; set; } 
+    public Guid ApartmentId { get; set; } 
     public string UserId { get; set; } = string.Empty;
     public DateOnly From { get; set; }
     public DateOnly To { get; set; }

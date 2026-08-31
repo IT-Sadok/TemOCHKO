@@ -1,5 +1,7 @@
-﻿using BookingManagerWeb.Application.Auth.Mapping;
+﻿using System.Reflection;
+using BookingManagerWeb.Application.Auth.Mapping;
 using BookingManagerWeb.Application.Auth.Services;
+using BookingManagerWeb.Application.Business.Mapping;
 using BookingManagerWeb.Application.Business.Services;
 using BookingManagerWeb.Infrastructure.Auth;
 using FluentValidation;
@@ -17,7 +19,7 @@ public static class DependencyInjection
         
         var config = TypeAdapterConfig.GlobalSettings;
         config.Scan(typeof(RegisterAuthMapping).Assembly);
-        
+        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());        
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
         
