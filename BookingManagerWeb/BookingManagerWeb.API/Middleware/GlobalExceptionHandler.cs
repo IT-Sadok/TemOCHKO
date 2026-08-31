@@ -1,4 +1,4 @@
-using BookingManagerWeb.Application.Auth;
+using BookingManagerWeb.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,21 +8,27 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        var problemDetails = new ProblemDetails();
-        problemDetails.Instance = httpContext.Request.Path;
-        if (exception is AuthException authException)
+        var problemDetails = new ProblemDetails
         {
-            problemDetails.Status = StatusCodes.Status400BadRequest;
-            problemDetails.Title = "Authentication error";
-            problemDetails.Detail = authException.Message;
+            Instance = httpContext.Request.Path
+        };
+        
+        if (exception is AppBaseException appBaseException)
+        {
+            problemDetails.Title = appBaseException.Title;
+            problemDetails.Status = appBaseException.StatusCode;
+            problemDetails.Detail = appBaseException.Message;
         }
         else
         {
             problemDetails.Status = StatusCodes.Status500InternalServerError;
             problemDetails.Title = "Internal server error";
             problemDetails.Detail = exception.Message;
+            
+            logger.LogError(exception, "Unhandled exception occurred.");
         }
-        logger.LogError("{ProblemDetailsTitle}", problemDetails.Title);
+        
+        httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
         return true;
     }

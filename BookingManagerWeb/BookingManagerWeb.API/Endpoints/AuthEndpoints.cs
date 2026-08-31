@@ -30,7 +30,6 @@ public static class AuthEndpoints
         IAuthService authService, 
         CancellationToken cancellationToken)
     {
-        
         var authServiceResponse = await authService.RegisterAsync(model, cancellationToken);
         return TypedResults.Created($"/auth/register/{authServiceResponse.Id}", authServiceResponse);
     }
