@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>BookingManagerWeb</RootNamespace>
+        <UserSecretsId>ff379fe4-52a4-4a6a-a1ad-c471af98ef94</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.18" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.16.16" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BookingManagerWeb.Application\BookingManagerWeb.Application.csproj" />
+      <ProjectReference Include="..\BookingManagerWeb.Infrastructure\BookingManagerWeb.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
